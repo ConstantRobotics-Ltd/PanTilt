@@ -11,9 +11,15 @@ namespace cr::pantilt
  */
 struct PanTiltParamsMask
 {
-    bool firstParam{ true };
-    bool secondParam{ true };
-    bool thirdParam{ true };
+    bool panMotorPosition{ true };
+    bool tiltMotorPosition{ true };
+    bool panAngle{ true };
+    bool tiltAngle{ true };
+    bool panTiltMotorPosition{ true };
+    bool panTiltAngle{ true };
+    bool panMotorSpeed{ true };
+    bool tiltMotorSpeed{ true };
+    bool panTiltMotorSpeed{ true };
 };
 
 /**
@@ -23,15 +29,29 @@ class PanTiltParams
 {
 public:
 
-    /// First param. Here describe what status does this flag define.
-    bool firstParam{ false };
-    /// Second param. Here describe nuances and param value valid range.
-    int secondParam{ 0 };
-    /// Third param. Here describe nuances and param value valid range.
-    float thirdParam{ 0.0f };
+    /// Pan motor position for encoder. Range: 0 - 65535.
+    int panMotorPosition{ 0 };
+    /// Tilt motor position for encoder. Range: 0 - 65535.
+    int tiltMotorPosition{ 0 };
+    /// Pan angle. Range: -180.0 - 180.0.
+    float panAngle{ 0.0f };
+    /// Tilt angle. Range: -90.0 - 90.0.
+    float tiltAngle{ 0.0f };
+    /// Pan tilt motor position for encoder. Range: 0 - 65535.
+    int panTiltMotorPosition{ 0 };
+    /// Pan tilt angle. Range: -180.0 - 180.0.
+    float panTiltAngle{ 0.0f };
+    /// Pan motor speed. Range: 0.0 - 100.0.
+    float panMotorSpeed{ 0.0f };
+    /// Tilt motor speed. Range: 0.0 - 100.0. 
+    float tiltMotorSpeed{ 0.0f };
+    /// Pan tilt motor speed. Range: 0.0 - 100.0.
+    float panTiltMotorSpeed{ 0.0f };
 
     /// Macro from ConfigReader to make params readable/writable from JSON.
-    JSON_READABLE(PanTiltParams, firstParam, secondParam, thirdParam)
+    JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
+        tiltAngle, panTiltMotorPosition, panTiltAngle, panMotorSpeed, tiltMotorSpeed,
+        panTiltMotorSpeed)
 
     /// operator =
         PanTiltParams& operator= (const PanTiltParams& src);
@@ -64,12 +84,24 @@ public:
  */
 enum class PanTiltParam
 {
-    /// First param. Here describe nuances and param value valid range.
-    FIRST_PARAM = 1,
-    /// Second param. Here describe nuances and param value valid range.
-    SECOND_PARAM,
-    /// Third param. Here describe nuances and param value valid range.
-    THIRD_PARAM
+    /// Pan motor position for encoder. Range: 0 - 65535.
+    PAN_MOTOR_POSITION = 1,
+    /// Tilt motor position for encoder. Range: 0 - 65535.
+    TILT_MOTOR_POSITION,
+    /// Pan angle. Range: -180.0 - 180.0.
+    PAN_ANGLE,
+    /// Tilt angle. Range: -90.0 - 90.0.
+    TILT_ANGLE,
+    /// Pan tilt motor position for encoder. Range: 0 - 65535.
+    PAN_TILT_MOTOR_POSITION,
+    /// Pan tilt angle. Range: -180.0 - 180.0.
+    PAN_TILT_ANGLE,
+    /// Pan motor speed. Range: 0.0 - 100.0.
+    PAN_MOTOR_SPEED,
+    /// Tilt motor speed. Range: 0.0 - 100.0.
+    TILT_MOTOR_SPEED,
+    /// Pan tilt motor speed. Range: 0.0 - 100.0.
+    PAN_TILT_MOTOR_SPEED
 };
 
 /**
@@ -77,12 +109,24 @@ enum class PanTiltParam
  */
 enum class PanTiltCommand
 {
-    /// First command.
-    FIRST_COMMAND = 1,
-    /// Second command.
-    SECOND_COMMAND,
-    /// Third command.
-    THIRD_COMMAND
+    /// Restart Pan-Tilt device.
+    RESTART = 1,
+    /// Stop Pan-Tilt device, block all running commands and left device in current state.
+    STOP,
+    /// Go to given pan motor position.
+    GO_TO_PAN_POSITION,
+    /// Go to given tilt motor position.
+    GO_TO_TILT_POSITION,
+    /// Go to given pan and tilt motor position.
+    GO_TO_PAN_TILT_POSITION,
+    /// Go to given pan angle.
+    GO_TO_PAN_ANGLE,
+    /// Go to given tilt angle.
+    GO_TO_TILT_ANGLE,
+    /// Go to given pan and tilt angle.
+    GO_TO_PAN_TILT_ANGLE,
+    /// Go to home position.
+    GO_TO_HOME
 };
 
 /**
