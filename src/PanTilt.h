@@ -158,40 +158,68 @@ public:
      * @param value The value to set for the parameter.
      * @return TRUE if the parameter was successfully set, FALSE otherwise.
      */
-    bool setParam(PanTiltParam id, float value);
+    virtual bool setParam(PanTiltParam id, float value) = 0;
 
     /**
      * @brief Get the value of a specific library parameter.
      * @param id The identifier of the library parameter.
      * @return The value of the specified parameter.
      */
-    float getParam(PanTiltParam id) const;
+    virtual float getParam(PanTiltParam id) const = 0;
 
     /**
      * @brief Get the structure containing all library parameters.
      * @param params Reference to a PanTiltParams structure.
      */
-    void getParams(PanTiltParams& params) const;
+    virtual void getParams(PanTiltParams& params) const = 0;
 
     /**
      * @brief Execute a PanTilt command.
      * @param id The identifier of the library command to be executed.
      * @return TRUE if the command was executed successfully, FALSE otherwise.
      */
-    bool executeCommand(PanTiltCommand id);
+    virtual bool executeCommand(PanTiltCommand id) = 0;
 
     /**
-     * @brief Any useful method of library.
-     * @param value Output value.
-     * @return TRUE if success, FALSE otherwise.
+     * @brief Encode set param command.
+     * @param data Pointer to data buffer. Must have size >= 11.
+     * @param size Size of encoded data.
+     * @param id Camera parameter id.
+     * @param value Camera parameter value.
      */
-    bool doSomething(int& value);
+    static void encodeSetParamCommand(
+        uint8_t* data, int& size, PanTiltParam id, float value);
 
-private:
+    /**
+     * @brief Encode command.
+     * @param data Pointer to data buffer. Must have size >= 7.
+     * @param size Size of encoded data.
+     * @param id Camera command ID.
+     */
+    static void encodeCommand(
+        uint8_t* data, int& size, PanTiltCommand id);
 
-    /// Library parameters structure.
-    PanTiltParams m_params;
-    /// Any private variable.
-    int m_variable{ 0 };
+    /**
+     * @brief Decode command.
+     * @param data Pointer to command data.
+     * @param size Size of data.
+     * @param paramId Output command ID.
+     * @param commandId Output command ID.
+     * @param value Param or command value.
+     * @return 0 - command decoded, 1 - set param command decoded, -1 - error.
+     */
+    static int decodeCommand(uint8_t* data,
+        int size,
+        PanTiltParam& paramId,
+        PanTiltCommand& commandId,
+        float& value);
+
+    /**
+     * @brief Decode and execute command.
+     * @param data Pointer to command data.
+     * @param size Size of data.
+     * @return TRUE if command decoded and executed or FALSE if not.
+     */
+    virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 };
 }

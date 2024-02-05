@@ -261,3 +261,79 @@ std::string cr::pantilt::PanTilt::getVersion()
 {
 	return PAN_TILT_VERSION;
 }
+
+
+
+void cr::pantilt::PanTilt::encodeSetParamCommand(
+	uint8_t* data, int& size, PanTiltParam id, float value)
+{
+	// Fill header.
+	data[0] = 0x01;
+	data[1] = PAN_TILT_MAJOR_VERSION;
+	data[2] = PAN_TILT_MINOR_VERSION;
+
+	// Fill data.
+	int paramId = (int)id;
+	memcpy(&data[3], &paramId, 4);
+	memcpy(&data[7], &value, 4);
+	size = 11;
+}
+
+
+
+void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size, PanTiltCommand id)
+{
+	// Fill header.
+	data[0] = 0x00;
+	data[1] = PAN_TILT_MAJOR_VERSION;
+	data[2] = PAN_TILT_MINOR_VERSION;
+
+	// Fill data.
+	int commandId = (int)id;
+	memcpy(&data[3], &commandId, 4);
+	size = 7;
+}
+
+
+
+int cr::pantilt::PanTilt::decodeCommand(uint8_t* data, int size, PanTiltParam& paramId,
+									PanTiltCommand& commandId, float& value)
+{
+	// Check size.
+	if (size < 7)
+	{
+		return -1;
+	}
+
+	// Check version.
+	if (data[1] != PAN_TILT_MAJOR_VERSION || data[2] != PAN_TILT_MAJOR_VERSION)
+	{
+		return -1;
+	}
+
+	// Extract data.
+	int id = 0;
+	memcpy(&id, &data[3], 4);
+	value = 0.0f;
+
+	// Check command type.
+	if (data[0] == 0x00)
+	{
+		commandId = static_cast<PanTiltCommand>(id);
+		return 0;
+	}
+	else if (data[0] == 0x01)
+	{
+		// Check size.
+		if (size != 11)
+		{
+			return false;
+		}
+
+		paramId = static_cast<PanTiltParam>(id);
+		memcpy(&value, &data[7], 4);
+		return 1;
+	}
+
+	return -1;
+}
