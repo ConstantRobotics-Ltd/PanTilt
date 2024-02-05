@@ -35,7 +35,7 @@ public:
     int tiltMotorPosition{ 0 };
     /// Pan angle. Range: -180.0 - 180.0.
     float panAngle{ 0.0f };
-    /// Tilt angle. Range: -90.0 - 90.0.
+    /// Tilt angle. Range: -float tiltAngle{ 0.0f };
     float tiltAngle{ 0.0f };
     /// Pan tilt motor position for encoder. Range: 0 - 65535.
     int panTiltMotorPosition{ 0 };
@@ -55,6 +55,11 @@ public:
 
     /// operator =
         PanTiltParams& operator= (const PanTiltParams& src);
+    
+    /**
+     * @brief Copy constructor.
+     */
+   // PanTiltParams(const PanTiltParams& src);
 
     /**
      * @brief Encode (serialize) params.
@@ -137,14 +142,9 @@ class PanTilt
 public:
 
     /**
-     * @brief Class constructor.
-     */
-    PanTilt();
-
-    /**
      * @brief Class destructor.
      */
-    ~PanTilt();
+    virtual ~PanTilt();
 
     /**
      * @brief Get the version of the PanTilt class.

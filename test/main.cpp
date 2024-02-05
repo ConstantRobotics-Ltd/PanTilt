@@ -66,28 +66,64 @@ bool copyParametersTest()
 {
 	// Prepare random params.
 	cr::pantilt::PanTiltParams params1;
-	params1.firstParam = true;
-	params1.secondParam = rand() % 255;
-	params1.thirdParam = static_cast<float>(rand() % 255);
+	params1.panAngle = static_cast<float>(rand() % 255);
+	params1.tiltAngle = static_cast<float>(rand() % 255);
+	params1.panMotorPosition = rand() % 65535;
+	params1.tiltMotorPosition = rand() % 65535;
+	params1.panTiltAngle = static_cast<float>(rand() % 255);
+	params1.panTiltMotorPosition = rand() % 65535;
+	params1.panMotorSpeed = static_cast<float>(rand() % 255);
+	params1.tiltMotorSpeed = static_cast<float>(rand() % 255);
+	params1.panTiltMotorSpeed = static_cast<float>(rand() % 255);
 
 	// Copy params.
 	cr::pantilt::PanTiltParams params2 = params1;
 
 	// Compare params.
 	bool result = true;
-	if (params1.firstParam != params2.firstParam)
+	if (params1.panAngle != params2.panAngle)
 	{
-		std::cout << "[" << __LINE__ << "] " << "firstParam not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "panAngle not equal" << std::endl;
 		result = false;
 	}
-	if (params1.secondParam != params2.secondParam)
+	if (params1.tiltAngle != params2.tiltAngle)
 	{
-		std::cout << "[" << __LINE__ << "] " << "secondParam not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "tiltAngle not equal" << std::endl;
 		result = false;
 	}
-	if (params1.thirdParam != params2.thirdParam)
+	if (params1.panMotorPosition != params2.panMotorPosition)
 	{
-		std::cout << "[" << __LINE__ << "] " << "thirdParam not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "panMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params1.tiltMotorPosition != params2.tiltMotorPosition)
+	{
+		std::cout << "[" << __LINE__ << "] " << "tiltMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panTiltAngle != params2.panTiltAngle)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltAngle not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panTiltMotorPosition != params2.panTiltMotorPosition)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panMotorSpeed != params2.panMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params1.tiltMotorSpeed != params2.tiltMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "tiltMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panTiltMotorSpeed != params2.panTiltMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltMotorSpeed not equal" << std::endl;
 		result = false;
 	}
 
@@ -100,9 +136,15 @@ bool encodeDecodeTestWithoutMask()
 {
 	// Prepare random params.
 	cr::pantilt::PanTiltParams params1;
-	params1.firstParam = true;
-	params1.secondParam = rand() % 255;
-	params1.thirdParam = static_cast<float>(rand() % 255);
+	params1.panAngle = static_cast<float>(rand() % 255);
+	params1.tiltAngle = static_cast<float>(rand() % 255);
+	params1.panMotorPosition = rand() % 65535;
+	params1.tiltMotorPosition = rand() % 65535;
+	params1.panTiltAngle = static_cast<float>(rand() % 255);
+	params1.panTiltMotorPosition = rand() % 65535;
+	params1.panMotorSpeed = static_cast<float>(rand() % 255);
+	params1.tiltMotorSpeed = static_cast<float>(rand() % 255);
+	params1.panTiltMotorSpeed = static_cast<float>(rand() % 255);
 
 	// Encode (serialize) params.
 	int bufferSize = 128;
@@ -124,21 +166,52 @@ bool encodeDecodeTestWithoutMask()
 
 	// Compare params.
 	bool result = true;
-	if (params1.firstParam != params2.firstParam)
+	if (params1.panAngle != params2.panAngle)
 	{
-		std::cout << "[" << __LINE__ << "] " << "firstParam not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "panAngle not equal" << std::endl;
 		result = false;
 	}
-	if (params1.secondParam != params2.secondParam)
+	if (params1.tiltAngle != params2.tiltAngle)
 	{
-		std::cout << "[" << __LINE__ << "] " << "secondParam not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "tiltAngle not equal" << std::endl;
 		result = false;
 	}
-	if (params1.thirdParam != params2.thirdParam)
+	if (params1.panMotorPosition != params2.panMotorPosition)
 	{
-		std::cout << "[" << __LINE__ << "] " << "thirdParam not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "panMotorPosition not equal" << std::endl;
 		result = false;
 	}
+	if (params1.tiltMotorPosition != params2.tiltMotorPosition)
+	{
+		std::cout << "[" << __LINE__ << "] " << "tiltMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panTiltAngle != params2.panTiltAngle)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltAngle not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panTiltMotorPosition != params2.panTiltMotorPosition)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panMotorSpeed != params2.panMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params1.tiltMotorSpeed != params2.tiltMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "tiltMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params1.panTiltMotorSpeed != params2.panTiltMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+
 
 	return result;
 }
@@ -149,15 +222,27 @@ bool encodeDecodeTestWithMask()
 {
 	// Prepare random params.
 	cr::pantilt::PanTiltParams params1;
-	params1.firstParam = true;
-	params1.secondParam = rand() % 255;
-	params1.thirdParam = static_cast<float>(rand() % 255);
+	params1.panAngle = static_cast<float>(rand() % 255);
+	params1.tiltAngle = static_cast<float>(rand() % 255);
+	params1.panMotorPosition = rand() % 65535;
+	params1.tiltMotorPosition = rand() % 65535;
+	params1.panTiltAngle = static_cast<float>(rand() % 255);
+	params1.panTiltMotorPosition = rand() % 65535;
+	params1.panMotorSpeed = static_cast<float>(rand() % 255);
+	params1.tiltMotorSpeed = static_cast<float>(rand() % 255);
+	params1.panTiltMotorSpeed = static_cast<float>(rand() % 255);
 
 	// Prepare mask.
 	cr::pantilt::PanTiltParamsMask mask;
-	mask.firstParam = false;
-	mask.secondParam = true; // Include only one param fr encoding.
-	mask.thirdParam = false;
+	mask.panAngle = false;
+	mask.tiltAngle = true;
+	mask.panMotorPosition = false;
+	mask.tiltMotorPosition = true;
+	mask.panTiltAngle = false;
+	mask.panTiltMotorPosition = true;
+	mask.panMotorSpeed = false;
+	mask.tiltMotorSpeed = true;
+	mask.panTiltMotorSpeed = false;
 
 	// Encode (serialize) params.
 	int bufferSize = 128;
@@ -179,19 +264,49 @@ bool encodeDecodeTestWithMask()
 
 	// Compare params.
 	bool result = true;
-	if (params2.firstParam != false)
+	if (params2.panAngle != 0.0f)
 	{
-		std::cout << "[" << __LINE__ << "] " << "firstParam not default" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "panAngle not equal" << std::endl;
 		result = false;
 	}
-	if (params2.secondParam != params1.secondParam)
+	if (params2.tiltAngle != params1.tiltAngle)
 	{
-		std::cout << "[" << __LINE__ << "] " << "secondParam not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "tiltAngle not equal" << std::endl;
 		result = false;
 	}
-	if (params2.thirdParam != 0.0f)
+	if (params2.panMotorPosition != 0)
 	{
-		std::cout << "[" << __LINE__ << "] " << "thirdParam not default" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "panMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params2.tiltMotorPosition != params1.tiltMotorPosition)
+	{
+		std::cout << "[" << __LINE__ << "] " << "tiltMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params2.panTiltAngle != 0.0f)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltAngle not equal" << std::endl;
+		result = false;
+	}
+	if (params2.panTiltMotorPosition != params1.panTiltMotorPosition)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltMotorPosition not equal" << std::endl;
+		result = false;
+	}
+	if (params2.panMotorSpeed != 0.0f)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params2.tiltMotorSpeed != params1.tiltMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "tiltMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params2.panTiltMotorSpeed != 0.0f)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panTiltMotorSpeed not equal" << std::endl;
 		result = false;
 	}
 
