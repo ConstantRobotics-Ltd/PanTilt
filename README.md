@@ -36,99 +36,89 @@
 
 # Overview
 
-**TemplateLibrary** C++ library is an example of the library structure. It defines data structures and rules to stand as an example for other repositories. In accordance with our documentation standards, it is mandatory for every repository within our project to include a README file like this one. This README should provide comprehensive information about the repository, including its purpose, usage guidelines, and any essential instructions for contributors. Please ensure that the README file follows the format and content similar to the one you are currently reviewing. This practice contributes to consistency, transparency, and ease of use across all our repositories. This library, as example, depends on open source [**ConfigReader**](https://github.com/ConstantRobotics-Ltd/ConfigReader) library which provides methods to work with JSON files.
-
-Overview section must include explanation of the purpose of library, C++ standard, important dependencies and main features. This text will be also used for publishing on website. Provide enough information, so that the user can immediately understand the purpose of the library and its compatibility with their project.
-
-Generally any library repository should have following structure:
-
-``` xml
-3rdparty ------------- Folder with third-party libraries (dependencies)
-    Submodule1 ------- Third-party library folder.
-    Submodule2 ------- Third-party library folder.
-    CMakeLists.txt --- CMake file to include third-party libraries.
-demo ----------------- Demo appllication folder.
-example -------------- Simple example folder, which uses in documentation.
-src ------------------ Source code folder.
-test ----------------- Forlder for tests.
-_static -------------- Folder with images for documentation.
-.gitignore ----------- File to exclude particular files/folders from repository.
-.gitmodules ---------- File defining submodules used in the library.
-CMakeLists.txt ------- Main CMake file.
-README.md ------------ Documentation.
-```
-
-
+**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines data structures and rules to showcase an example structure for similar repositories. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures (**[PanTiltCommand enum](#PanTiltCommand-enum)**, **[PanTiltParam enum](#PanTiltParam-enum)** and **PanTiltParams class**) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
 
 # Versions
 
 **Table 1** - Library versions.
 
-| Version                        | Release date | What's new                                                   |
-| ------------------------------ | ------------ | ------------------------------------------------------------ |
-| 1.0.0<br />[MAJOR.MINOR.PATCH] | DD.MM.YYYY   | - Make sure to update library versions table after each release.<br />- Briefly describe every important change or update. <br />- Use bullet list style. |
+| Version | Release date | What's new                          |
+| ------- | ------------ | ----------------------------------- |
+| 1.0.0   | 06.02.2024   | - First version of PanTilt library. |
 
 
 
 # Library files
 
-The **TemplateLibrary** is a CMake project. Library files chapter should briefly describe what's inside this repository. It is very important so every associate or customer will understand what particular repository includes:
+The **PanTilt** is a CMake project. Library files:
 
 ```xml
 CMakeLists.txt ------------------- Main CMake file of the library.
 3rdparty ------------------------- Folder with third-party libraries.
     CMakeLists.txt --------------- CMake file which includes third-party libraries.
     ConfigReader ----------------- Source code of the ConfigReader library.
-example -------------------------- Folder with the simplest example of library usage.
-    CMakeLists.txt --------------- CMake file for simple example.
-    main.cpp --------------------- Source code file of simple example application.
 test ----------------------------- Folder for internal tests of library.
     CMakeLists.txt --------------- CMake file for tests application.
     main.cpp --------------------- Source code file tests application.
 src ------------------------------ Folder with source code of the library.
     CMakeLists.txt --------------- CMake file of the library.
-    TemplateLibrary.cpp ---------- Source code file of the library.
-    TemplateLibrary.h ------------ Header file which includes TemplateLibrary class declaration.
-    TemplateLibraryVersion.h ----- Header file which includes version of the library.
-    TemplateLibraryVersion.h.in -- CMake service file to generate version file.
+    PanTilt.cpp ------------------ Source code file of the library.
+    PanTilt.h -------------------- Header file which includes PanTilt class declaration.
+    PanTiltVersion.h ------------- Header file which includes version of the library.
+    PanTiltVersion.h.in ---------- CMake service file to generate version file.
 ```
 
 
 
-# TemplateLibrary interface class description
+# PanTilt interface class description
 
 
 
 ## Class declaration
 
-**TemplateLibrary** interface class declared in **TemplateLibrary.h** file. Class declaration:
+**PanTilt** interface class declared in **PanTilt.h** file. Class declaration:
 
 ```cpp
-class TemplateLibrary {
+class PanTilt
+{
 public:
-    /// Class constructor.
-    TemplateLibrary();
 
-    /// Class destructor.
-    ~TemplateLibrary();
+   
+    // Class virtual destructor.
+    virtual ~PanTilt();
 
-    /// Get the version of the TemplateLibrary class.
+    // Get the version of the PanTilt class.
     static std::string getVersion();
 
-    /// Set the value for a specific library parameter.
-    bool setParam(TemplateLibraryParam id, float value);
+	// Set the value for a specific library parameter.
+    virtual bool setParam(PanTiltParam id, float value) = 0;
 
-    /// Get the value of a specific library parameter.
-    float getParam(TemplateLibraryParam id);
+	// Get the value of a specific library parameter.
+    virtual float getParam(PanTiltParam id) const = 0;
 
-    /// Get the structure containing all library parameters.
-    void getParams(TemplateLibraryParams& params);
+	// Get the structure containing all library parameters.
+    virtual void getParams(PanTiltParams& params) const = 0;
 
-    /// Execute a template command.
-    bool executeCommand(TemplateLibraryCommand id);
+	// Execute a PanTilt command.
+    virtual bool executeCommand(PanTiltCommand id) = 0;
 
-    /// Any useful method of library.
-    bool doSomething(int& value);
+	// Encode set param command.
+    static void encodeSetParamCommand(
+        uint8_t* data, int& size, PanTiltParam id, float value);
+
+	// Encode command.
+    static void encodeCommand(
+        uint8_t* data, int& size, PanTiltCommand id);
+
+	// Decode command.
+    static int decodeCommand(uint8_t* data,
+        int size,
+        PanTiltParam& paramId,
+        PanTiltCommand& commandId,
+        float& value);
+
+	// Decode and execute command.
+    virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 };
 ```
 
@@ -142,31 +132,31 @@ public:
 static std::string getVersion();
 ```
 
-Method can be used without **TemplateLibrary** class instance:
+Method can be used without **PanTilt** class instance:
 
 ```cpp
-std::cout << "TemplateLibrary version: " << cr::templ::TemplateLibrary::getVersion() << std::endl;
+std::cout << "PanTilt version: " << cr::pantilt::PanTilt::getVersion();
 ```
 
 Console output:
 
 ```bash
-TemplateLibrary class version: 1.0.0
+PanTilt class version: 1.0.0
 ```
 
 
 
 ## setParam method
 
-**setParam(...)** method sets new parameters value. Every implementation of library with parameters have to provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
+**setParam(...)** method sets new parameters value. **PanTilt** based library should provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
-bool setParam(TemplateLibraryParam id, float value);
+bool setParam(PanTiltParam id, float value);
 ```
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Parameter ID according to [TemplateLibraryParam](#TemplateLibraryParam-enum) enum. |
+| id        | Parameter ID according to [PanTiltParam](#PanTiltParam-enum) enum. |
 | value     | Parameter value. Value depends on parameter ID.              |
 
 **Returns:** TRUE if the parameter was set or FALSE if not.
@@ -175,15 +165,15 @@ bool setParam(TemplateLibraryParam id, float value);
 
 ## getParam method
 
-**getParam(...)** method returns parameter value. Every implementation of library with parameters have to provide thread-safe **getParam(...)** method call. This means that the **getParam(...)** method can be safely called from any thread. Method declaration:
+**getParam(...)** method returns parameter value. **PanTilt** based library should provide thread-safe **getParam(...)** method call. This means that the **getParam(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
-float getParam(TemplateLibraryParam id);
+float getParam(PanTiltParam id);
 ```
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Parameter ID according to [TemplateLibraryParam](#TemplateLibraryParam-enum) enum. |
+| id        | Parameter ID according to [PanTiltParam](#PanTiltParam-enum) enum. |
 
 **Returns:** parameter value or **-1** if the parameters doesn't exist.
 
@@ -191,49 +181,153 @@ float getParam(TemplateLibraryParam id);
 
 ## getParams method
 
-**getParams(...)** method is designed to obtain params structure. Every implementation of library with parameters have to provide thread-safe **getParams(...)** method call. This means that the **getParams(...)** method can be safely called from any thread. Method declaration:
+**getParams(...)** method is designed to obtain params structure. **PanTilt** based library should provide thread-safe **getParams(...)** method call. This means that the **getParams(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
-void getParams(TemplateLibraryParams& params);
+void getParams(PanTiltParams& params);
 ```
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| params    | Reference to [TemplateLibraryParams](#TemplateLibraryParams-class-description) object to store params. |
-
-
-
-## doSomething method
-
-**doSomething(...)** does something. Method declaration:
-
-```cpp
-bool doSomething(int& value);
-```
-
-| Parameter | Description                |
-| --------- | -------------------------- |
-| value     | Reference to output value. |
-
-**Returns:** TRUE if the library did something or FALSE if not.
+| params    | Reference to [PanTiltParams](#PanTiltParams-class-description) object to store params. |
 
 
 
 ## executeCommand method
 
-**executeCommand(...)** method executes library command. Every implementation of library with parameters have to provide thread-safe **executeCommand(...)** method call. This means that the **executeCommand(...)** method can be safely called from any thread. Method declaration:
+**executeCommand(...)** method executes library command. **PanTilt** based library should provide thread-safe **executeCommand(...)** method call. This means that the **executeCommand(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
-bool executeCommand(TemplateLibraryCommand id);
+bool executeCommand(PanTiltCommand id);
 ```
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Command  ID according to [TemplateLibraryCommand](#TemplateLibraryCommand-enum) enum. |
+| id        | Command  ID according to [PanTiltCommand](#PanTiltCommand-enum) enum. |
 
 **Returns:** TRUE if the command executed or FALSE if not.
 
 
+
+## encodeSetParamCommand method
+
+**encodeSetParamCommand(...)** static method encodes command to change any PanTilt parameter value. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeSetParamCommand(...)** designed to encode SET_PARAM command. Method declaration:
+
+```cpp
+static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id, float value);
+```
+
+| Parameter | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| data      | Pointer to data buffer for encoded command. Must have size >= 11. |
+| size      | Size of encoded data. Will be 11 bytes.                      |
+| id        | Parameter ID according to [**PanTilt enum**](#PanTilt-enum). |
+| value     | Parameter value.                                             |
+
+**SET_PARAM** command format:
+
+| Byte | Value | Description                                        |
+| ---- | ----- | -------------------------------------------------- |
+| 0    | 0x01  | SET_PARAM command header value.                    |
+| 1    | Major | Major version of PanTilt class.                    |
+| 2    | Minor | Minor version of PanTilt class.                    |
+| 3    | id    | Parameter ID **int32_t** in Little-endian format.  |
+| 4    | id    | Parameter ID **int32_t** in Little-endian format.  |
+| 5    | id    | Parameter ID **int32_t** in Little-endian format.  |
+| 6    | id    | Parameter ID **int32_t** in Little-endian format.  |
+| 7    | value | Parameter value **float** in Little-endian format. |
+| 8    | value | Parameter value **float** in Little-endian format. |
+| 9    | value | Parameter value **float** in Little-endian format. |
+| 10   | value | Parameter value **float** in Little-endian format. |
+
+**encodeSetParamCommand(...)** is static and used without **PanTilt** class instance. This method used on client side (control system). Command encoding example:
+
+```cpp
+// Buffer for encoded data.
+uint8_t data[11];
+// Size of encoded data.
+int size = 0;
+// Random parameter value.
+float outValue = static_cast<float>(rand() % 20);
+// Encode command.
+PanTilt::encodeSetParamCommand(data, size, PanTiltParam::PAN_ANGLE, outValue);
+```
+
+
+
+## encodeCommand method
+
+**encodeCommand(...)** static method encodes command for PanTilt remote control. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt ** class contains static methods for encoding the control command. The **PanTilt ** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeCommand(...)** designed to encode COMMAND command (action command). Method declaration:
+
+```cpp
+static void encodeCommand(uint8_t* data, int& size, PanTilt Command id);
+```
+
+| Parameter | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| data      | Pointer to data buffer for encoded command. Must have size >= 7. |
+| size      | Size of encoded data. Will be 7 bytes.                       |
+| id        | Command ID according to [**PanTiltCommand enum**](#PanTiltCommand-enum). |
+
+**COMMAND** format:
+
+| Byte | Value | Description                                     |
+| ---- | ----- | ----------------------------------------------- |
+| 0    | 0x00  | COMMAND header value.                           |
+| 1    | Major | Major version of Camera class.                  |
+| 2    | Minor | Minor version of Camera class.                  |
+| 3    | id    | Command ID **int32_t** in Little-endian format. |
+| 4    | id    | Command ID **int32_t** in Little-endian format. |
+| 5    | id    | Command ID **int32_t** in Little-endian format. |
+| 6    | id    | Command ID **int32_t** in Little-endian format. |
+
+**encodeCommand(...)** is static and used without **Camera** class instance. This method used on client side (control system). Command encoding example:
+
+```cpp
+// Buffer for encoded data.
+uint8_t data[7];
+// Size of encoded data.
+int size = 0;
+// Encode command.
+Camera::encodeCommand(data, size, CameraCommand::NUC);
+```
+
+
+
+## decodeCommand method
+
+**decodeCommand(...)** static method decodes command on camera controller side. Method declaration:
+
+```cpp
+static int decodeCommand(uint8_t* data, int size, CameraParam& paramId, CameraCommand& commandId, float& value);
+```
+
+| Parameter | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| data      | Pointer to input command.                                    |
+| size      | Size of command. Must be 11 bytes for SET_PARAM and 7 bytes for COMMAND. |
+| paramId   | Camera parameter ID according to [**CameraParam enum**](#CameraParam-enum). After decoding SET_PARAM command the method will return parameter ID. |
+| commandId | Camera command ID according to [**CameraCommand enum**](#CameraCommand-enum). After decoding COMMAND the method will return command ID. |
+| value     | Camera parameter value (after decoding SET_PARAM command).   |
+
+**Returns:** **0** - in case decoding COMMAND, **1** - in case decoding SET_PARAM command or **-1** in case errors.
+
+
+
+## decodeAndExecuteCommand method
+
+**decodeAndExecuteCommand(...)** method decodes and executes command on camera controller side. The particular implementation of the camera controller must provide thread-safe **decodeAndExecuteCommand(...)** method call. This means that the **decodeAndExecuteCommand(...)** method can be safely called from any thread. Method declaration:
+
+```cpp
+virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
+```
+
+| Parameter | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| data      | Pointer to input command.                                    |
+| size      | Size of command. Must be 11 bytes for SET_PARAM or 7 bytes for COMMAND. |
+
+**Returns:** TRUE if command decoded (SET_PARAM or COMMAND) and executed (action command or set param command).
 
 # Data structures
 
