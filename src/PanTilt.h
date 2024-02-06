@@ -35,7 +35,7 @@ public:
     int tiltMotorPosition{ 0 };
     /// Pan angle. Range: -180.0 - 180.0.
     float panAngle{ 0.0f };
-    /// Tilt angle. Range: -float tiltAngle{ 0.0f };
+    /// Tilt angle. Range: -90.0 - 90.0.
     float tiltAngle{ 0.0f };
     /// Pan tilt motor position for encoder. Range: 0 - 65535.
     int panTiltMotorPosition{ 0 };
@@ -55,11 +55,6 @@ public:
 
     /// operator =
         PanTiltParams& operator= (const PanTiltParams& src);
-    
-    /**
-     * @brief Copy constructor.
-     */
-   // PanTiltParams(const PanTiltParams& src);
 
     /**
      * @brief Encode (serialize) params.
@@ -165,13 +160,13 @@ public:
      * @param id The identifier of the library parameter.
      * @return The value of the specified parameter.
      */
-    virtual float getParam(PanTiltParam id) const = 0;
+    virtual float getParam(PanTiltParam id) = 0;
 
     /**
      * @brief Get the structure containing all library parameters.
      * @param params Reference to a PanTiltParams structure.
      */
-    virtual void getParams(PanTiltParams& params) const = 0;
+    virtual void getParams(PanTiltParams& params) = 0;
 
     /**
      * @brief Execute a PanTilt command.
