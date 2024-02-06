@@ -31,6 +31,7 @@ endif()
 ################################################################################
 SET(${PARENT}_PAN_TILT                       ON  CACHE BOOL "" ${REWRITE_FORCE})
 SET(${PARENT}_PAN_TILT_TEST                  ON  CACHE BOOL "" ${REWRITE_FORCE})
+SET(${PARENT}_PAN_TILT_EXAMPLE               ON  CACHE BOOL "" ${REWRITE_FORCE})
 
 
 
@@ -45,4 +46,8 @@ endif()
 
 if (${PARENT}_PAN_TILT_TEST)
     add_subdirectory(test)
+endif()
+
+if (${PARENT}_PAN_TILT_EXAMPLE)
+    add_subdirectory(example)
 endif()
