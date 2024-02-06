@@ -1,8 +1,8 @@
-![logo](_static/template_web_logo.png)
+![logo](_static/pantilt_web_logo.png)
 
 
 
-# **Template  C++ library**
+# **PanTilt C++ library**
 
 **v1.0.0**
 
@@ -13,24 +13,27 @@
 - [Overview](#Overview)
 - [Versions](#Versions)
 - [Library files](#Library-files)
-- [TemplateLibrary interface class description](#TemplateLibrary-interface-class-description)
+- [PanTilt interface class description](#PanTilt-interface-class-description)
   - [Class declaration](#Class-declaration)
   - [getVersion method](#getVersion-method)
   - [setParam method](#setParam-method)
   - [getParam method](#getParam-method)
   - [getParams method](#getParams-method)
   - [executeCommand method](#executeCommand-method)
-  - [doSomething method](#doSomething-method)
+  - [encodeSetParamCommand method](#encodeSetParamCommand-method)
+  - [encodeCommand method](#encodeCommand-method)
+  - [decodeCommand method](#decodeCommand-method) 
+  - [decodeAndExecuteCommand method](#decodeAndExecuteCommand-method)
 - [Data structures](#Data-structures)
-  - [TemplateLibraryCommand enum](#TemplateLibraryCommand-enum)
-  - [TemplateLibraryParam enum](#TemplateLibraryParam-enum)
-- [TemplateLibraryParams class description](#TemplateLibraryParams-class-description)
+  - [PanTiltCommand enum](#PanTiltCommand-enum)
+  - [PanTiltParam enum](#PanTiltParam-enum)
+- [PanTiltParams class description](#PanTiltParams-class-description)
   - [Class declaration](#Class-declaration)
-  - [Serialize template params](#Serialize-template-params)
-  - [Deserialize template params](#Deserialize-template-params)
+  - [Serialize PanTilt params](#Serialize-PanTilt-params)
+  - [Deserialize PanTilt params](#Deserialize-PanTilt-params)
   - [Read params from JSON file and write to JSON file](#Read-params-from-JSON-file-and-write-to-JSON-file)
 - [Build and connect to your project](#Build-and-connect-to-your-project)
-- [Example](#Example)
+- [How to make custom implementation](#How-to-make-custom-implementation)
 
 
 
@@ -82,7 +85,6 @@ src ------------------------------ Folder with source code of the library.
 class PanTilt
 {
 public:
-
    
     // Class virtual destructor.
     virtual ~PanTilt();
@@ -257,7 +259,7 @@ PanTilt::encodeSetParamCommand(data, size, PanTiltParam::PAN_ANGLE, outValue);
 
 ## encodeCommand method
 
-**encodeCommand(...)** static method encodes command for PanTilt remote control. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt ** class contains static methods for encoding the control command. The **PanTilt ** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeCommand(...)** designed to encode COMMAND command (action command). Method declaration:
+**encodeCommand(...)** static method encodes command for PanTilt remote control. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeCommand(...)** designed to encode COMMAND command (action command). Method declaration:
 
 ```cpp
 static void encodeCommand(uint8_t* data, int& size, PanTilt Command id);
@@ -274,14 +276,14 @@ static void encodeCommand(uint8_t* data, int& size, PanTilt Command id);
 | Byte | Value | Description                                     |
 | ---- | ----- | ----------------------------------------------- |
 | 0    | 0x00  | COMMAND header value.                           |
-| 1    | Major | Major version of Camera class.                  |
-| 2    | Minor | Minor version of Camera class.                  |
+| 1    | Major | Major version of PanTilt class.                 |
+| 2    | Minor | Minor version of PanTilt class.                 |
 | 3    | id    | Command ID **int32_t** in Little-endian format. |
 | 4    | id    | Command ID **int32_t** in Little-endian format. |
 | 5    | id    | Command ID **int32_t** in Little-endian format. |
 | 6    | id    | Command ID **int32_t** in Little-endian format. |
 
-**encodeCommand(...)** is static and used without **Camera** class instance. This method used on client side (control system). Command encoding example:
+**encodeCommand(...)** is static and used without **PanTilt** class instance. This method used on client side (control system). Command encoding example:
 
 ```cpp
 // Buffer for encoded data.
@@ -289,26 +291,26 @@ uint8_t data[7];
 // Size of encoded data.
 int size = 0;
 // Encode command.
-Camera::encodeCommand(data, size, CameraCommand::NUC);
+PanTilt::encodeCommand(data, size, PanTilt::GO_TO_PAN_ANGLE);
 ```
 
 
 
 ## decodeCommand method
 
-**decodeCommand(...)** static method decodes command on camera controller side. Method declaration:
+**decodeCommand(...)** static method decodes command on pan-tilt device controller side. Method declaration:
 
 ```cpp
-static int decodeCommand(uint8_t* data, int size, CameraParam& paramId, CameraCommand& commandId, float& value);
+static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId, PanTiltCommand& commandId, float& value);
 ```
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to input command.                                    |
 | size      | Size of command. Must be 11 bytes for SET_PARAM and 7 bytes for COMMAND. |
-| paramId   | Camera parameter ID according to [**CameraParam enum**](#CameraParam-enum). After decoding SET_PARAM command the method will return parameter ID. |
-| commandId | Camera command ID according to [**CameraCommand enum**](#CameraCommand-enum). After decoding COMMAND the method will return command ID. |
-| value     | Camera parameter value (after decoding SET_PARAM command).   |
+| paramId   | PanTilt parameter ID according to [**PanTiltParam enum**](#PanTiltParam-enum). After decoding SET_PARAM command the method will return parameter ID. |
+| commandId | PanTilt command ID according to [**PanTiltCommand enum**](#PanTiltCommand-enum). After decoding COMMAND the method will return command ID. |
+| value     | PanTilt parameter value (after decoding SET_PARAM command).  |
 
 **Returns:** **0** - in case decoding COMMAND, **1** - in case decoding SET_PARAM command or **-1** in case errors.
 
@@ -316,7 +318,7 @@ static int decodeCommand(uint8_t* data, int size, CameraParam& paramId, CameraCo
 
 ## decodeAndExecuteCommand method
 
-**decodeAndExecuteCommand(...)** method decodes and executes command on camera controller side. The particular implementation of the camera controller must provide thread-safe **decodeAndExecuteCommand(...)** method call. This means that the **decodeAndExecuteCommand(...)** method can be safely called from any thread. Method declaration:
+**decodeAndExecuteCommand(...)** method decodes and executes command on pan-tilt device controller side. The particular implementation of the PanTilt controller must provide thread-safe **decodeAndExecuteCommand(...)** method call. This means that the **decodeAndExecuteCommand(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
@@ -333,163 +335,219 @@ virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 
 
 
-## TemplateLibraryCommand enum
+## PanTiltCommand enum
 
 Enum declaration:
 
 ```cpp
-enum class TemplateLibraryCommand
+enum class PanTiltCommand
 {
-    /// First command.
-    FIRST_COMMAND = 1,
-    /// Second command.
-    SECOND_COMMAND,
-    /// Third command.
-    THIRD_COMMAND
+    /// Restart Pan-Tilt device.
+    RESTART = 1,
+    /// Stop Pan-Tilt device, block all running commands and left device in current state.
+    STOP,
+    /// Go to given pan motor position.
+    GO_TO_PAN_POSITION,
+    /// Go to given tilt motor position.
+    GO_TO_TILT_POSITION,
+    /// Go to given pan and tilt motor position.
+    GO_TO_PAN_TILT_POSITION,
+    /// Go to given pan angle.
+    GO_TO_PAN_ANGLE,
+    /// Go to given tilt angle.
+    GO_TO_TILT_ANGLE,
+    /// Go to given pan and tilt angle.
+    GO_TO_PAN_TILT_ANGLE,
+    /// Go to home position.
+    GO_TO_HOME
 };
 ```
 
 **Table 2** - Commands description.
 
-| Command        | Description                   |
-| -------------- | ----------------------------- |
-| FIRST_COMMAND  | First command.                |
-| SECOND_COMMAND | Second command.               |
-| THIRD_COMMAND  | Third command.                |
+| Command                 | Description                                                  |
+| ----------------------- | ------------------------------------------------------------ |
+| RESTART                 | Restart pan-tilt device.                                     |
+| STOP                    | Stop Pan-Tilt device, block all running commands and left device in current state. |
+| GO_TO_PAN_POSITION      | Go to given pan motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
+| GO_TO_TILT_POSITION     | Go to given tilt motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
+| GO_TO_PAN_TILT_POSITION | Go to given pan and tilt motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
+| GO_TO_PAN_ANGLE         | Go to given pan angle. Valid values from -180.0° to 180.0°.  |
+| GO_TO_TILT_ANGLE        | Go to given tilt angle. Valid values from -90.0° to 90.0°.   |
+| GO_TO_PAN_TILT_ANGLE    | Go to given pan and tilt angle. Valid values from -180.0° to 180.0°. |
+| GO_TO_HOME              | Go to home position.                                         |
 
 
 
-## TemplateLibraryParam enum
+## PanTiltParam enum
 
 Enum declaration:
 
 ```cpp
-enum class TemplateLibraryParam
+enum class PanTiltParam
 {
-    /// First param. Here describe nuances and param value vaid range.
-    FIRST_PARAM = 1,
-    /// Second param. Here describe nuances and param value vaid range.
-    SECOND_PARAM,
-    /// Third param. Here describe nuances and param value vaid range.
-    THIRD_PARAM
+    /// Pan motor position for encoder. Range: 0 - 65535.
+    PAN_MOTOR_POSITION = 1,
+    /// Tilt motor position for encoder. Range: 0 - 65535.
+    TILT_MOTOR_POSITION,
+    /// Pan angle. Range: -180.0 - 180.0.
+    PAN_ANGLE,
+    /// Tilt angle. Range: -90.0 - 90.0.
+    TILT_ANGLE,
+    /// Pan tilt motor position for encoder. Range: 0 - 65535.
+    PAN_TILT_MOTOR_POSITION,
+    /// Pan tilt angle. Range: -180.0 - 180.0.
+    PAN_TILT_ANGLE,
+    /// Pan motor speed. Range: 0.0 - 100.0.
+    PAN_MOTOR_SPEED,
+    /// Tilt motor speed. Range: 0.0 - 100.0.
+    TILT_MOTOR_SPEED,
+    /// Pan tilt motor speed. Range: 0.0 - 100.0.
+    PAN_TILT_MOTOR_SPEED
 };
 ```
 
 **Table 3** - Params description.
 
-| Parameter    | Access       | Description                                                  |
-| ------------ | ------------ | ------------------------------------------------------------ |
-| FIRST_PARAM  | read / write | First param. Valid values **0** or **1**:<br />**0** - set to set firstParam of TempleLibraryParams class to **false**.<br />**1** - set to set firstParam of TempleLibraryParams class to **true**. |
-| SECOND_PARAM | read / write | Second param. Valid values from **-100** to **100**.         |
-| THIRD_PARAM  | read / write | Third param. Valid values from **-100** to **100**.          |
+| Parameter               | Access       | Description                                            |
+| ----------------------- | ------------ | ------------------------------------------------------ |
+| PAN_MOTOR_POSITION      | read / write | Pan motor position for encoder. Range: 0 to 65535.     |
+| TILT_MOTOR_POSITION     | read / write | Tilt motor position for encoder. Range: 0 to 65535.    |
+| PAN_ANGLE               | read / write | Pan angle. Range: -180.0 to 180.0.                     |
+| TILT_ANGLE              | read / write | Tilt angle. Range: -90.0 - 90.0.                       |
+| PAN_TILT_MOTOR_POSITION | read / write | Pan tilt motor position for encoder. Range: 0 - 65535. |
+| PAN_TILT_ANGLE          | read / write | Pan tilt angle. Range: -180.0 - 180.0.                 |
+| PAN_MOTOR_SPEED         | read / write | Pan motor speed. Range: 0.0 - 100.0.                   |
+| TILT_MOTOR_SPEED        | read / write | Tilt motor speed. Range: 0.0 - 100.0.                  |
+| PAN_TILT_MOTOR_SPEED    | read / write | Pan tilt motor speed. Range: 0.0 - 100.0.              |
 
 
 
-# TemplateLibraryParams class description
+# PanTiltParams class description
 
 
 
 ## Class declaration
 
-**TemplateLibraryParams** class is used to provide example params structure. Also **TemplateLibraryParams** provides possibility to write/read params from JSON files (**JSON_READABLE** macro) and provides methods to encode and decode params. **TemplateLibraryParams** interface class declared in **TemplateLibrary.h** file. Class declaration:
+**PanTiltParams** class is used to provide pan-tilt parameters structure. Also **PanTiltParams** provides possibility to write/read params from JSON files (**JSON_READABLE** macro) and provides methods to encode and decode params. **PanTiltParams** interface class declared in **PanTilt.h** file. Class declaration:
 
 ```cpp
-class TemplateLibraryParams
+class PanTiltParams
 {
 public:
 
-    /// First param. Here describe what status does this flag define.
-    bool firstParam{ false };
-    /// Second param. Here describe nuances and param value vaid range.
-    int secondParam{ 0 };
-    /// Third param. Here describe nuances and param value vaid range.
-    float thirdParam{ 0.0f };
-
+    /// Pan motor position for encoder. Range: 0 - 65535.
+    int panMotorPosition{ 0 };
+    /// Tilt motor position for encoder. Range: 0 - 65535.
+    int tiltMotorPosition{ 0 };
+    /// Pan angle. Range: -180.0 - 180.0.
+    float panAngle{ 0.0f };
+    /// Tilt angle. Range: -90.0 - 90.0.
+    float tiltAngle{ 0.0f };
+    /// Pan tilt motor position for encoder. Range: 0 - 65535.
+    int panTiltMotorPosition{ 0 };
+    /// Pan tilt angle. Range: -180.0 - 180.0.
+    float panTiltAngle{ 0.0f };
+    /// Pan motor speed. Range: 0.0 - 100.0.
+    float panMotorSpeed{ 0.0f };
+    /// Tilt motor speed. Range: 0.0 - 100.0. 
+    float tiltMotorSpeed{ 0.0f };
+    /// Pan tilt motor speed. Range: 0.0 - 100.0.
+    float panTiltMotorSpeed{ 0.0f };
+    
     /// Macro from ConfigReader to make params readable/writable from JSON.
-    JSON_READABLE(TemplateLibraryParams, firstParam, secondParam, thirdParam)
+    JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
+        tiltAngle, panTiltMotorPosition, panTiltAngle, panMotorSpeed, tiltMotorSpeed,
+        panTiltMotorSpeed)
 
     /// operator =
-    TemplateLibraryParams& operator= (const TemplateLibraryParams& src);
+        PanTiltParams& operator= (const PanTiltParams& src);
 
-    /// Encode (serialize) params.
+    // Encode (serialize) params.
     bool encode(uint8_t* data, int bufferSize, int& size,
-                TemplateLibraryParamsMask* mask = nullptr);
-
-    /// Decode (deserialize) params.
+                                             PanTiltParamsMask* mask = nullptr);
+	// Decode (deserialize) params.
     bool decode(uint8_t* data, int dataSize);
 };
 ```
 
-**Table 4** - TemplateLibraryParams class fields description is related to [TemplateLibraryParam enum](#TemplateLibraryParam-enum) description.
+**Table 4** - **PanTiltParams** class fields description is related to [PanTiltParam enum](#PanTiltParam-enum) description.
 
-| Field       | type  | Description            |
-| ----------- | ----- | ---------------------- |
-| firstParam  | bool  | First template param.  |
-| secondParam | int   | Second template param. |
-| thirdParam  | float | Third template param.  |
+| Field                | type  | Description                                            |
+| -------------------- | ----- | ------------------------------------------------------ |
+| panMotorPosition     | int   | Pan motor position for encoder. Range: 0 - 65535.      |
+| tiltMotorPosition    | int   | Tilt motor position for encoder. Range: 0 - 65535.     |
+| panAngle             | float | Pan angle. Range: -180.0 - 180.0.                      |
+| tiltAngle            | float | Tilt angle. Range: -90.0 - 90.0.                       |
+| panTiltMotorPosition | int   | Pan tilt motor position for encoder. Range: 0 - 65535. |
+| panTiltAngle         | float | Pan tilt angle. Range: -180.0 - 180.0.                 |
+| panMotorSpeed        | float | Pan motor speed. Range: 0.0 - 100.0.                   |
+| tiltMotorSpeed       | float | Tilt motor speed. Range: 0.0 - 100.0.                  |
+| panTiltMotorSpeed    | float | Pan tilt motor speed. Range: 0.0 - 100.0.              |
 
-**None:** *TemplateParams class fields listed in Table 4 **must** reflect params set/get by methods setParam(...) and getParam(...).* 
+**None:** *PanTiltParams class fields listed in Table 4 **have to** reflect params set/get by methods setParam(...) and getParam(...).* 
 
 
 
-## Serialize template params
+## Serialize PanTilt params
 
-[TemplateLibraryParams](#TemplateLibraryParams-class-description) class provides method **encode(...)** to serialize template params. Serialization of template params necessary in case when you have to send template params via communication channels. Method provides options to exclude particular parameters from serialization. To do this method inserts binary mask (1 byte) where each bit represents particular parameter and **decode(...)** method recognizes it. Method declaration:
+[PanTiltParams](#PanTiltParams-class-description) class provides method **encode(...)** to serialize PanTilt params. Serialization of PanTilt params is necessary in case when PanTilt params have to be sent via communication channels. Method provides options to exclude particular parameters from serialization. To do this method inserts binary mask (1 byte) where each bit represents particular parameter and **decode(...)** method recognizes it. Method declaration:
 
 ```cpp
-bool encode(uint8_t* data, int bufferSize, int& size, TemplateLibraryParamsMask* mask = nullptr);
+bool encode(uint8_t* data, int bufferSize, int& size, PanTiltParamsMask* mask = nullptr);
 ```
 
 | Parameter  | Value                                                        |
 | ---------- | ------------------------------------------------------------ |
-| data       | Pointer to data buffer. Buffer size must be >= 237 bytes.    |
-| bufferSize | Data buffer size. Buffer size must be >= 237 bytes.          |
+| data       | Pointer to data buffer. Buffer size must be >= 48 bytes.     |
+| bufferSize | Data buffer size. Buffer size must be >= 48 bytes.           |
 | size       | Size of encoded data.                                        |
-| mask       | Parameters mask - pointer to **TemplateLibraryParamsMask** structure. **TemplateLibraryParamsMask** (declared in TemplateLibrary.h file) determines flags for each field (parameter) declared in [TemplateLibraryParams class](#TemplateLibraryParams-class-description). If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **TemplateLibraryParamsMask** structure. |
+| mask       | Parameters mask - pointer to **PanTiltParamsMask** structure. **PanTiltParamsMask** (declared in PanTilt.h file) determines flags for each field (parameter) declared in [PanTiltParams class](#PanTiltParams-class-description). If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **PanTiltParamsMask** structure. |
 
 **Returns:** TRUE if params encoded (serialized) or FALSE if not.
 
-**TemplateLibraryParamsMask** structure declaration:
+**PanTiltParamsMask** structure declaration:
 
 ```cpp
-struct TemplateLibraryParamsMask
+struct PanTiltParamsMask
 {
-    bool firstParam{ true };
-    bool secondParam{ true };
-    bool thirdParam{ true };
+    bool panMotorPosition{ true };
+    bool tiltMotorPosition{ true };
+    bool panAngle{ true };
+    bool tiltAngle{ true };
+    bool panTiltMotorPosition{ true };
+    bool panTiltAngle{ true };
+    bool panMotorSpeed{ true };
+    bool tiltMotorSpeed{ true };
+    bool panTiltMotorSpeed{ true };
 };
 ```
 
 Example without parameters mask:
 
 ```cpp
-// Prepare random params.
-cr::templ::TemplateLibraryParams params1;
-params1.firstParam = true;
-params1.secondParam = rand() % 255;
-params1.thirdParam = static_cast<float>(rand() % 255);
+// Prepare parameters.
+cr::pantilt::PanTiltParams params;
+params.panAngle = 160.0f;
 
 // Encode (serialize) params.
 int bufferSize = 128;
 uint8_t buffer[128];
 int size = 0;
-params1.encode(buffer, bufferSize, size);
+params.encode(buffer, bufferSize, size);
 ```
 
 Example with parameters mask:
 
 ```cpp
-// Prepare random params.
-cr::templ::TemplateLibraryParams params1;
-params1.firstParam = true;
-params1.secondParam = rand() % 255;
-params1.thirdParam = static_cast<float>(rand() % 255);
+// Prepare parameters.
+cr::pantilt::PanTiltParams params;
+params.panAngle = 160.0f;
 
 // Prepare mask.
-cr::templ::TemplateLibraryParamsMask mask;
-mask.firstParam = false;
-mask.secondParam = true; // Include only one param fr encoding.
-mask.thirdParam = false;
+cr::pantilt::PanTiltParamsMask mask;
+// Exclude tiltAngle.
+mask.tiltAngle = false;
 
 // Encode (serialize) params.
 int bufferSize = 128;
@@ -500,9 +558,9 @@ params1.encode(buffer, bufferSize, size, &mask);
 
 
 
-## Deserialize template params
+## Deserialize PanTilt params
 
-[TemplateLibraryParams](#TemplateLibraryParams-class-description) class provides method **decode(...)** to deserialize params. Deserialization of template params necessary in case when you need to receive params via communication channels. Method automatically recognizes which parameters were serialized by **encode(...)** method. Method declaration:
+[PanTiltParams](#PanTiltParams-class-description) class provides method **decode(...)** to deserialize params. Deserialization of PanTilt params is necessary in case when it is needed to receive params via communication channels. Method automatically recognizes which parameters were serialized by **encode(...)** method. Method declaration:
 
 ```cpp
 bool decode(uint8_t* data, int dataSize);
@@ -518,11 +576,9 @@ bool decode(uint8_t* data, int dataSize);
 Example:
 
 ```cpp
-// Prepare random params.
-cr::templ::TemplateLibraryParams params1;
-params1.firstParam = true;
-params1.secondParam = rand() % 255;
-params1.thirdParam = static_cast<float>(rand() % 255);
+// Prepare parameters.
+cr::pantilt::PanTiltParams params1;
+params1.panAngle = 160.0f;
 
 // Encode (serialize) params.
 int bufferSize = 128;
@@ -531,7 +587,7 @@ int size = 0;
 params1.encode(buffer, bufferSize, size);
 
 // Decode (deserialize) params.
-cr::templ::TemplateLibraryParams params2;
+cr::pantilt::PanTiltParams params2;
 params2.decode(buffer, size);
 ```
 
@@ -539,33 +595,39 @@ params2.decode(buffer, size);
 
 ## Read params from JSON file and write to JSON file
 
-**TemplateLibrary** depends on open source [**ConfigReader**](https://github.com/ConstantRobotics-Ltd/ConfigReader) library which provides method to read params from JSON file and to write params to JSON file. Example of writing and reading params to JSON file:
+**PanTilt** depends on open source [**ConfigReader**](https://github.com/ConstantRobotics-Ltd/ConfigReader) library which provides method to read params from JSON file and to write params to JSON file. Example of writing and reading params to JSON file:
 
 ```cpp
 // Write params to file.
 cr::utils::ConfigReader inConfig;
-cr::templ::TemplateLibraryParams in;
-inConfig.set(in, "templateParams");
-inConfig.writeToFile("TestTemplateParams.json");
+cr::pantilt::PanTiltParams in;
+inConfig.set(in, "panTiltParams");
+inConfig.writeToFile("PanTiltParams.json");
 
 // Read params from file.
 cr::utils::ConfigReader outConfig;
-if(!outConfig.readFromFile("TestTemplateParams.json"))
+if(!outConfig.readFromFile("PanTiltParams.json"))
 {
     cout << "Can't open config file" << endl;
     return false;
 }
 ```
 
-**TestTemplateParams.json** will look like:
+**PanTiltParams.json** will look like:
 
 ```json
 {
-    "templateParams":
+    "panTiltParams":
     {
-        "firstParam": true,
-        "secondParam": 1,
-        "thirdParam": 0.5f
+        "panMotorPosition": 43565,
+        "tiltMotorPosition": 10500,
+        "panAngle": 30.5f,
+        "tiltAngle": 89.9f,
+        "panTiltMotorPosition": 300,
+        "panTiltAngle": 60.0f,
+        "panMotorSpeed": 50.0f,
+        "tiltMotorSpeed": 100.0f,
+        "panTiltMotorSpeed": 10.5f
     }
 }
 ```
@@ -574,11 +636,11 @@ if(!outConfig.readFromFile("TestTemplateParams.json"))
 
 # Build and connect to your project
 
-Typical commands to build **TemplateLibrary**:
+Typical commands to build **PanTilt**:
 
 ```bash
-git clone https://github.com/ConstantRobotics-Ltd/TemplateLibrary.git
-cd TemplateLibrary
+git clone https://github.com/ConstantRobotics-Ltd/PanTilt.git
+cd PanTilt
 git submodule update --init --recursive
 mkdir build
 cd build
@@ -586,7 +648,7 @@ cmake ..
 make
 ```
 
-If you want connect **TemplateLibrary** to your CMake project as source code you can make follow. For example, if your repository has structure:
+If you want connect **PanTilt** to your CMake project as source code you can make follow. For example, if your repository has structure:
 
 ```bash
 CMakeLists.txt
@@ -596,15 +658,15 @@ src
     yourLib.cpp
 ```
 
-You can add repository **TemplateLibrary** as submodule by commands:
+You can add repository **PanTilt** as submodule by commands:
 
 ```bash
 cd <your respository folder>
-git submodule add https://github.com/ConstantRobotics-Ltd/TemplateLibrary.git 3rdparty/TemplateLibrary
+git submodule add https://github.com/ConstantRobotics-Ltd/PanTilt.git 3rdparty/PanTilt
 git submodule update --init --recursive
 ```
 
-In you repository folder will be created folder **3rdparty/TemplateLibrary** which contains files of **TemplateLibrary** repository with subrepository **ConfigReader** and **ConfigReader**. New structure of your repository:
+In your repository folder will be created folder **3rdparty/PanTilt** which contains files of **PanTilt** repository with subrepository **ConfigReader** and **ConfigReader**. New structure of your repository:
 
 ```bash
 CMakeLists.txt
@@ -613,7 +675,7 @@ src
     yourLib.h
     yourLib.cpp
 3rdparty
-    TemplateLibrary
+    PanTilt
 ```
 
 Create CMakeLists.txt file in **3rdparty** folder. CMakeLists.txt should contain:
@@ -640,24 +702,23 @@ SET(${PARENT}_SUBMODULE_CACHE_OVERWRITE OFF CACHE BOOL "" FORCE)
 ## CONFIGURATION
 ## 3rd-party submodules configuration
 ################################################################################
-SET(${PARENT}_SUBMODULE_TEMPLATE_LIBRARY                ON  CACHE BOOL "" FORCE)
-if (${PARENT}_SUBMODULE_TEMPLATE_LIBRARY)
-    SET(${PARENT}_TEMPLATE_LIBRARY                      ON  CACHE BOOL "" FORCE)
-    SET(${PARENT}_TEMPLATE_LIBRARY_TEST                 OFF CACHE BOOL "" FORCE)
-    SET(${PARENT}_TEMPLATE_LIBRARY_EXAMPLE              OFF CACHE BOOL "" FORCE)
-    SET(${PARENT}_TEMPLATE_LIBRARY_DEMO                 OFF CACHE BOOL "" FORCE)
+SET(${PARENT}_SUBMODULE_PAN_TILT                        ON  CACHE BOOL "" FORCE)
+if (${PARENT}_SUBMODULE_PAN_TILT)
+    SET(${PARENT}_PAN_TILT                              ON  CACHE BOOL "" FORCE)
+    SET(${PARENT}_PAN_TILT_TEST                         OFF CACHE BOOL "" FORCE)
+    SET(${PARENT}_PAN_TILT_EXAMPLE                      OFF CACHE BOOL "" FORCE)
 endif()
 
 ################################################################################
 ## INCLUDING SUBDIRECTORIES
 ## Adding subdirectories according to the 3rd-party configuration
 ################################################################################
-if (${PARENT}_SUBMODULE_TEMPLATE_LIBRARY)
-    add_subdirectory(TemplateLibrary)
+if (${PARENT}_SUBMODULE_PAN_TILT)
+    add_subdirectory(PanTilt)
 endif()
 ```
 
-File **3rdparty/CMakeLists.txt** adds folder **TemplateLibrary** to your project and excludes test application and example (TemplateLibrary class test applications and example of custom TemplateLibrary class implementation) from compiling. Your repository new structure will be:
+File **3rdparty/CMakeLists.txt** adds folder **PanTilt** to your project and excludes test application and example (PanTilt class test application and example of custom **PanTilt** class implementation) from compiling. Your repository new structure will be:
 
 ```bash
 CMakeLists.txt
@@ -667,7 +728,7 @@ src
     yourLib.cpp
 3rdparty
     CMakeLists.txt
-    TemplateLibrary
+    PanTilt
 ```
 
 Next you need include folder 3rdparty in main **CMakeLists.txt** file of your repository. Add string at the end of your main **CMakeLists.txt**:
@@ -676,69 +737,55 @@ Next you need include folder 3rdparty in main **CMakeLists.txt** file of your re
 add_subdirectory(3rdparty)
 ```
 
-Next you have to include **TemplateLibrary** library in your **src/CMakeLists.txt** file:
+Next you have to include **PanTilt** library in your **src/CMakeLists.txt** file:
 
 ```cmake
-target_link_libraries(${PROJECT_NAME} TemplateLibrary)
+target_link_libraries(${PROJECT_NAME} PanTilt)
 ```
 
 Done!
 
 
 
-# Example
+# How to make custom implementation
 
-Simple example shows how to use library.
+The **PanTilt** class provides only an interface, data structures, and methods for encoding and decoding commands and params. To create your own implementation of the pan-tilt controller, PanTilt repository has to be included in your project (see [**Build and connect to your project**](#Build-and-connect-to-your-project) section). The catalogue **example** (see [**Library files**](#Library-files) section) includes an example of the design of the custom pan-tilt controller. All the methods of the PanTilt interface class have to be included. Custom PanTilt class declaration:
 
-```cpp
-#include <iostream>
-#include "TemplateLibrary.h"
-
-int main(void)
+```c++
+class CustomPanTilt : public PanTilt
 {
-	// Create library object.
-	cr::templ::TemplateLibrary lib;
+public:
 
-	// Set params.
-	lib.setParam(cr::templ::TemplateLibraryParam::FIRST_PARAM, 1.0f);
-	lib.setParam(cr::templ::TemplateLibraryParam::SECOND_PARAM, 2.0f);
-	lib.setParam(cr::templ::TemplateLibraryParam::THIRD_PARAM, 2.0f);
+    // Class constructor.
+    CustomPanTilt();
 
-	// Display params.
-	std::cout << lib.getParam(cr::templ::TemplateLibraryParam::FIRST_PARAM) << std::endl;
-	std::cout << lib.getParam(cr::templ::TemplateLibraryParam::SECOND_PARAM) << std::endl;
-	std::cout << lib.getParam(cr::templ::TemplateLibraryParam::THIRD_PARAM) << std::endl;
+    // Class destructor.
+    ~CustomPanTilt();
 
-	// Execute commands.
-	lib.executeCommand(cr::templ::TemplateLibraryCommand::FIRST_COMMAND);
-	lib.executeCommand(cr::templ::TemplateLibraryCommand::SECOND_COMMAND);
-	lib.executeCommand(cr::templ::TemplateLibraryCommand::THIRD_COMMAND);
+    // Get the version of the PanTilt class.
+    static std::string getVersion();
 
-	// Get params.
-	cr::templ::TemplateLibraryParams params;
-	lib.getParams(params);
+ 	// Set the value for a specific library parameter.
+    bool setParam(PanTiltParam id, float value) override;
 
-	// Display params.
-	std::cout << std::string(params.firstParam ? "true" : "false") << std::endl;
-	std::cout << params.secondParam << std::endl;
-	std::cout << params.thirdParam << std::endl;
+    // Get the value of a specific library parameter.
+    float getParam(PanTiltParam id) override;
 
-	// Do something.
-	std::cout << "Do something:" << std::endl;
-	for (int i = 0; i < 10; ++i)
-	{
-		int value = 0;
-		lib.doSomething(value);
-		std::cout << "Value: " << value << std::endl;
-	}
+    // Get the structure containing all library parameters.
+    void getParams(PanTiltParams& params) override;
 
-	return 0;
-}
+    // Execute a PanTilt command.
+    bool executeCommand(PanTiltCommand id) override;
+
+    // Decode and execute command.
+    bool decodeAndExecuteCommand(uint8_t* data, int size);
+
+private:
+
+    /// Parameters structure (default params).
+    PanTiltParams m_params;
+    /// Mutex for parameters access.
+    std::mutex m_paramsMutex;
+};
 ```
-
-
-
-
-
-
 
