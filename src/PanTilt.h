@@ -148,6 +148,38 @@ public:
     static std::string getVersion();
 
     /**
+     * @brief Open pan-tilt device.
+     * @param initString Init string. Format depends on target controller.
+     * @return TRUE if the pan-tilt controller is init or FALSE if not.
+     */
+    virtual bool open(std::string initString) = 0;
+
+    /**
+     * @brief Init pan-tilt device with parameters structure.
+     * Can be used instead of open(...) method.
+     * @param initString Init string. Format depends on target controller.
+     * @return TRUE if the pan-tilt controller init or FALSE if not.
+     */
+    virtual bool init(PanTiltParams& params) = 0;
+
+    /**
+     * @brief Close pan-tilt controller connection.
+     */
+    virtual void close() = 0;
+
+    /**
+     * @brief Get pan-tilt controller is opened status.
+     * @return TRUE if the pan-tilt controller is open or FALSE if not.
+     */
+    virtual bool isOpened() = 0;
+
+    /**
+     * @brief Get pan-tilt controller is connected status.
+     * @return TRUE if the pan-tilt controller is open or FALSE if not.
+     */
+    virtual bool isConnected() = 0;
+
+    /**
      * @brief Set the value for a specific library parameter.
      * @param id The identifier of the library parameter.
      * @param value The value to set for the parameter.
@@ -179,8 +211,8 @@ public:
      * @brief Encode set param command.
      * @param data Pointer to data buffer. Must have size >= 11.
      * @param size Size of encoded data.
-     * @param id Camera parameter id.
-     * @param value Camera parameter value.
+     * @param id PanTilt parameter id.
+     * @param value PanTilt parameter value.
      */
     static void encodeSetParamCommand(
         uint8_t* data, int& size, PanTiltParam id, float value);
@@ -189,7 +221,7 @@ public:
      * @brief Encode command.
      * @param data Pointer to data buffer. Must have size >= 7.
      * @param size Size of encoded data.
-     * @param id Camera command ID.
+     * @param id PanTilt command ID.
      */
     static void encodeCommand(
         uint8_t* data, int& size, PanTiltCommand id);
