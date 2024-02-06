@@ -20,6 +20,8 @@ struct PanTiltParamsMask
     bool panMotorSpeed{ true };
     bool tiltMotorSpeed{ true };
     bool panTiltMotorSpeed{ true };
+    bool isConnected{ true };
+    bool isOpened{ true };
 };
 
 /**
@@ -47,11 +49,15 @@ public:
     float tiltMotorSpeed{ 0.0f };
     /// Pan tilt motor speed. Range: 0.0 - 100.0.
     float panTiltMotorSpeed{ 0.0f };
+    /// Status defining if the pan-tilt device is connected.
+    bool isConnected{ false };
+	/// Status defining if the pan-tilt device is opened.
+    bool isOpened{ false };
 
     /// Macro from ConfigReader to make params readable/writable from JSON.
     JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
         tiltAngle, panTiltMotorPosition, panTiltAngle, panMotorSpeed, tiltMotorSpeed,
-        panTiltMotorSpeed)
+        panTiltMotorSpeed, isConnected, isOpened)
 
     /// operator =
         PanTiltParams& operator= (const PanTiltParams& src);
@@ -101,7 +107,11 @@ enum class PanTiltParam
     /// Tilt motor speed. Range: 0.0 - 100.0.
     TILT_MOTOR_SPEED,
     /// Pan tilt motor speed. Range: 0.0 - 100.0.
-    PAN_TILT_MOTOR_SPEED
+    PAN_TILT_MOTOR_SPEED,
+    /// Status defining if the pan-tilt device is connected.
+    IS_CONNECTED,
+    /// Status defining if the pan-tilt device is opened.
+	IS_OPENED
 };
 
 /**

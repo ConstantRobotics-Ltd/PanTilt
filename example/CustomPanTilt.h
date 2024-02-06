@@ -32,6 +32,38 @@ public:
     static std::string getVersion();
 
     /**
+     * @brief Open pan-tilt device.
+     * @param initString Init string. Format depends on target controller.
+     * @return TRUE if the pan-tilt controller is init or FALSE if not.
+     */
+    bool open(std::string initString) override;
+
+    /**
+     * @brief Init pan-tilt device with parameters structure.
+     * Can be used instead of open(...) method.
+     * @param initString Init string. Format depends on target controller.
+     * @return TRUE if the pan-tilt controller init or FALSE if not.
+     */
+    bool init(PanTiltParams& params) override;
+
+    /**
+     * @brief Close pan-tilt controller connection.
+     */
+    void close() override;
+
+    /**
+     * @brief Get pan-tilt controller is opened status.
+     * @return TRUE if the pan-tilt controller is open or FALSE if not.
+     */
+    bool isOpened() override;
+
+    /**
+     * @brief Get pan-tilt controller is connected status.
+     * @return TRUE if the pan-tilt controller is open or FALSE if not.
+     */
+    bool isConnected() override;
+
+    /**
      * @brief Set the value for a specific library parameter.
      * @param id The identifier of the library parameter.
      * @param value The value to set for the parameter.

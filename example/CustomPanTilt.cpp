@@ -23,6 +23,53 @@ std::string cr::pantilt::CustomPanTilt::getVersion()
 
 
 
+bool cr::pantilt::CustomPanTilt::open(std::string initString)
+{
+	// Set connection flags.
+	m_params.isOpened = true;
+	m_params.isConnected = true;
+
+	return true;
+}
+
+
+
+bool cr::pantilt::CustomPanTilt::init(PanTiltParams& params)
+{
+	// Copy params.
+	m_params = params;
+
+	// Set connection flags.
+	m_params.isOpened = true;
+	m_params.isConnected = true;
+
+	return true;
+}
+
+
+
+void cr::pantilt::CustomPanTilt::close()
+{
+	m_params.isConnected = false;
+	m_params.isOpened = false;
+}
+
+
+
+bool cr::pantilt::CustomPanTilt::isOpened()
+{
+	return m_params.isOpened;
+}
+
+
+
+bool cr::pantilt::CustomPanTilt::isConnected()
+{
+	return m_params.isConnected;
+}
+
+
+
 bool cr::pantilt::CustomPanTilt::setParam(PanTiltParam id, float value)
 {
 	// Lock mutex for setting parameters.
@@ -120,6 +167,16 @@ bool cr::pantilt::CustomPanTilt::setParam(PanTiltParam id, float value)
 		m_params.tiltMotorSpeed = value;
 		return true;
 	}
+	case PanTiltParam::IS_CONNECTED:
+	{
+		// Read only.
+		return false;
+	}
+	case PanTiltParam::IS_OPENED:
+	{
+		// Read only.
+		return false;
+	}
 	}
 
 	return false;
@@ -169,6 +226,14 @@ float cr::pantilt::CustomPanTilt::getParam(PanTiltParam id)
 	case PanTiltParam::TILT_MOTOR_SPEED:
 	{
 		return m_params.tiltMotorSpeed;
+	}
+	case PanTiltParam::IS_CONNECTED:
+	{
+		return m_params.isConnected ? 1.0f : 0.0f;
+	}
+	case PanTiltParam::IS_OPENED:
+	{
+		return m_params.isOpened ? 1.0f : 0.0f;
 	}
 	}
 

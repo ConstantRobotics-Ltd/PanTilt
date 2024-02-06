@@ -62,46 +62,68 @@ bool cr::pantilt::PanTiltParams::encode(uint8_t* data, int bufferSize, int& size
     pos += 1;
 	data[pos] = 0x00;
     data[pos] = data[pos] | (paramsMask.tiltMotorSpeed ? (uint8_t)128 : (uint8_t)0);
+    data[pos] = data[pos] | (paramsMask.isConnected ? (uint8_t)64 : (uint8_t)0);
+    data[pos] = data[pos] | (paramsMask.isOpened ? (uint8_t)32 : (uint8_t)0);
     pos += 1;
 
 	// Copy params to buffer.
 	if (paramsMask.panAngle)
 	{
-		memcpy(&data[pos], &panAngle, sizeof(float)); pos += sizeof(float);
+		memcpy(&data[pos], &panAngle, sizeof(panAngle));
+		pos += sizeof(panAngle);
 	}
 	if (paramsMask.panMotorPosition)
 	{
-		memcpy(&data[pos], &panMotorPosition, sizeof(int)); pos += sizeof(int);
+		memcpy(&data[pos], &panMotorPosition, sizeof(panMotorPosition));
+		pos += sizeof(panMotorPosition);
 	}
 	if (paramsMask.panMotorSpeed)
 	{
-		memcpy(&data[pos], &panMotorSpeed, sizeof(float)); pos += sizeof(float);
+		memcpy(&data[pos], &panMotorSpeed, sizeof(panMotorSpeed));
+		pos += sizeof(panMotorSpeed);
 	}
 	if (paramsMask.panTiltAngle)
 	{
-		memcpy(&data[pos], &panTiltAngle, sizeof(float)); pos += sizeof(float);
+		memcpy(&data[pos], &panTiltAngle, sizeof(panTiltAngle));
+		pos += sizeof(panTiltAngle);
 	}
 	if (paramsMask.panTiltMotorPosition)
 	{
-		memcpy(&data[pos], &panTiltMotorPosition, sizeof(int)); pos += sizeof(int);
+		memcpy(&data[pos], &panTiltMotorPosition, sizeof(panTiltMotorPosition));
+		pos += sizeof(panTiltMotorPosition);
 	}
 	if (paramsMask.panTiltMotorSpeed)
 	{
-		memcpy(&data[pos], &panTiltMotorSpeed, sizeof(float)); pos += sizeof(float);
+		memcpy(&data[pos], &panTiltMotorSpeed, sizeof(panTiltMotorSpeed));
+		pos += sizeof(panTiltMotorSpeed);
 	}
 	if (paramsMask.tiltAngle)
 	{
-		memcpy(&data[pos], &tiltAngle, sizeof(float)); pos += sizeof(float);
+		memcpy(&data[pos], &tiltAngle, sizeof(tiltAngle));
+		pos += sizeof(tiltAngle);
 	}
 	if (paramsMask.tiltMotorPosition)
 	{
-		memcpy(&data[pos], &tiltMotorPosition, sizeof(int)); pos += sizeof(int);
+		memcpy(&data[pos], &tiltMotorPosition, sizeof(tiltMotorPosition));
+		pos += sizeof(tiltMotorPosition);
 	}
 	if (paramsMask.tiltMotorSpeed)
 	{
-		memcpy(&data[pos], &tiltMotorSpeed, sizeof(float)); pos += sizeof(float);
+		memcpy(&data[pos], &tiltMotorSpeed, sizeof(tiltMotorSpeed));
+		pos += sizeof(tiltMotorSpeed);
 	}
-
+	if (paramsMask.isConnected)
+	{
+		data[pos] = isConnected == true ? 0x01 : 0x00;
+		pos += sizeof(isConnected);
+		
+	}
+	if (paramsMask.isOpened)
+	{
+		data[pos] = isOpened == true ? 0x01 : 0x00;
+		pos += sizeof(isOpened);
+	}
+	
 	size = pos;
 
 	return true;
@@ -243,6 +265,32 @@ bool cr::pantilt::PanTiltParams::decode(uint8_t* data, int dataSize)
 	else
 	{
 		tiltMotorSpeed = 0.0f;
+	}
+	if ((data[4] & (uint8_t)64) == (uint8_t)64)
+	{
+		if (dataSize < pos + sizeof(isConnected))
+		{
+			return false;
+		}
+		isConnected = data[pos] == 0x00 ? false : true;
+		pos += sizeof(isConnected);
+	}
+	else
+	{
+		isConnected = 0.0f;
+	}
+	if ((data[4] & (uint8_t)32) == (uint8_t)32)
+	{
+		if (dataSize < pos + sizeof(isOpened))
+		{
+			return false;
+		}
+		isOpened = data[pos] == 0x00 ? false : true;
+		pos += sizeof(isOpened);
+	}
+	else
+	{
+		isOpened = 0.0f;
 	}
 
 	return true;
