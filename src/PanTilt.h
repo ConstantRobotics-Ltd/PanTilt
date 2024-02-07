@@ -53,11 +53,13 @@ public:
     bool isConnected{ false };
 	/// Status defining if the pan-tilt device is opened.
     bool isOpened{ false };
+    /// Init string. Format depends on target controller.
+    std::string initString{ "" };
 
     /// Macro from ConfigReader to make params readable/writable from JSON.
     JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
         tiltAngle, panTiltMotorPosition, panTiltAngle, panMotorSpeed, tiltMotorSpeed,
-        panTiltMotorSpeed, isConnected, isOpened)
+        panTiltMotorSpeed, isConnected, isOpened, initString)
 
     /// operator =
         PanTiltParams& operator= (const PanTiltParams& src);
