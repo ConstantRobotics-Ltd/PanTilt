@@ -36,7 +36,7 @@ public:
      * @param initString Init string. Format depends on target controller.
      * @return TRUE if the pan-tilt controller is init or FALSE if not.
      */
-    bool open(std::string initString) override;
+    bool openPanTilt(std::string initString) override;
 
     /**
      * @brief Init pan-tilt device with parameters structure.
@@ -44,24 +44,24 @@ public:
      * @param initString Init string. Format depends on target controller.
      * @return TRUE if the pan-tilt controller init or FALSE if not.
      */
-    bool init(PanTiltParams& params) override;
+    bool initPanTilt(PanTiltParams& params) override;
 
     /**
      * @brief Close pan-tilt controller connection.
      */
-    void close() override;
+    void closePanTilt() override;
 
     /**
      * @brief Get pan-tilt controller is opened status.
      * @return TRUE if the pan-tilt controller is open or FALSE if not.
      */
-    bool isOpened() override;
+    bool isPanTiltOpened() override;
 
     /**
      * @brief Get pan-tilt controller is connected status.
      * @return TRUE if the pan-tilt controller is open or FALSE if not.
      */
-    bool isConnected() override;
+    bool isPanTiltConnected() override;
 
     /**
      * @brief Set the value for a specific library parameter.

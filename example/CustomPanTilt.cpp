@@ -23,7 +23,7 @@ std::string cr::pantilt::CustomPanTilt::getVersion()
 
 
 
-bool cr::pantilt::CustomPanTilt::open(std::string initString)
+bool cr::pantilt::CustomPanTilt::openPanTilt(std::string initString)
 {
 	// Set connection flags.
 	m_params.isOpened = true;
@@ -34,7 +34,7 @@ bool cr::pantilt::CustomPanTilt::open(std::string initString)
 
 
 
-bool cr::pantilt::CustomPanTilt::init(PanTiltParams& params)
+bool cr::pantilt::CustomPanTilt::initPanTilt(PanTiltParams& params)
 {
 	// Copy params.
 	m_params = params;
@@ -48,7 +48,7 @@ bool cr::pantilt::CustomPanTilt::init(PanTiltParams& params)
 
 
 
-void cr::pantilt::CustomPanTilt::close()
+void cr::pantilt::CustomPanTilt::closePanTilt()
 {
 	m_params.isConnected = false;
 	m_params.isOpened = false;
@@ -56,14 +56,14 @@ void cr::pantilt::CustomPanTilt::close()
 
 
 
-bool cr::pantilt::CustomPanTilt::isOpened()
+bool cr::pantilt::CustomPanTilt::isPanTiltOpened()
 {
 	return m_params.isOpened;
 }
 
 
 
-bool cr::pantilt::CustomPanTilt::isConnected()
+bool cr::pantilt::CustomPanTilt::isPanTiltConnected()
 {
 	return m_params.isConnected;
 }

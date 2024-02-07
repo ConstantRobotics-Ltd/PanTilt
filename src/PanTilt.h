@@ -162,7 +162,7 @@ public:
      * @param initString Init string. Format depends on target controller.
      * @return TRUE if the pan-tilt controller is init or FALSE if not.
      */
-    virtual bool open(std::string initString) = 0;
+    virtual bool openPanTilt(std::string initString) = 0;
 
     /**
      * @brief Init pan-tilt device with parameters structure.
@@ -170,24 +170,24 @@ public:
      * @param initString Init string. Format depends on target controller.
      * @return TRUE if the pan-tilt controller init or FALSE if not.
      */
-    virtual bool init(PanTiltParams& params) = 0;
+    virtual bool initPanTilt(PanTiltParams& params) = 0;
 
     /**
      * @brief Close pan-tilt controller connection.
      */
-    virtual void close() = 0;
+    virtual void closePanTilt() = 0;
 
     /**
      * @brief Get pan-tilt controller is opened status.
      * @return TRUE if the pan-tilt controller is open or FALSE if not.
      */
-    virtual bool isOpened() = 0;
+    virtual bool isPanTiltOpened() = 0;
 
     /**
      * @brief Get pan-tilt controller is connected status.
      * @return TRUE if the pan-tilt controller is open or FALSE if not.
      */
-    virtual bool isConnected() = 0;
+    virtual bool isPanTiltConnected() = 0;
 
     /**
      * @brief Set the value for a specific library parameter.
