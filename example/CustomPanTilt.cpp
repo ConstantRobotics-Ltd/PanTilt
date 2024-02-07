@@ -251,7 +251,7 @@ void cr::pantilt::CustomPanTilt::getParams(PanTiltParams& params)
 
 
 
-bool cr::pantilt::CustomPanTilt::executeCommand(PanTiltCommand id)
+bool cr::pantilt::CustomPanTilt::executeCommand(PanTiltCommand id, float arg = 0)
 {
 	// Check command ID.
 	switch (id)

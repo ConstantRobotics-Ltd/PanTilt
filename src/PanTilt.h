@@ -217,7 +217,7 @@ public:
      * @param id The identifier of the library command to be executed.
      * @return TRUE if the command was executed successfully, FALSE otherwise.
      */
-    virtual bool executeCommand(PanTiltCommand id) = 0;
+    virtual bool executeCommand(PanTiltCommand id, float arg = 0) = 0;
 
     /**
      * @brief Encode set param command.

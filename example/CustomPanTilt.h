@@ -89,7 +89,7 @@ public:
      * @param id The identifier of the library command to be executed.
      * @return TRUE if the command was executed successfully, FALSE otherwise.
      */
-    bool executeCommand(PanTiltCommand id) override;
+    bool executeCommand(PanTiltCommand id, float arg = 0) override;
 
     /**
      * @brief Decode and execute command.
