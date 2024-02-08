@@ -4,7 +4,9 @@
 
 
 
-namespace cr::pantilt
+namespace cr
+{
+namespace pantilt
 {
 /**
  * @brief Mask for PanTilt library params for encoding (serializing).
@@ -15,13 +17,13 @@ struct PanTiltParamsMask
     bool tiltMotorPosition{ true };
     bool panAngle{ true };
     bool tiltAngle{ true };
-    bool panTiltMotorPosition{ true };
-    bool panTiltAngle{ true };
     bool panMotorSpeed{ true };
     bool tiltMotorSpeed{ true };
-    bool panTiltMotorSpeed{ true };
     bool isConnected{ true };
-    bool isOpened{ true };
+    bool isInitialized{ true };
+    bool custom1{ true };
+    bool custom2{ true };
+    bool custom3{ true };
 };
 
 /**
@@ -35,34 +37,40 @@ public:
     int panMotorPosition{ 0 };
     /// Tilt motor position for encoder. Range: 0 - 65535.
     int tiltMotorPosition{ 0 };
-    /// Pan angle. Range: -180.0 - 180.0.
+    /// Pan angle. Range: -180.0 to 180.0.
     float panAngle{ 0.0f };
-    /// Tilt angle. Range: -90.0 - 90.0.
+    /// Tilt angle. Range: -90.0 to 90.0.
     float tiltAngle{ 0.0f };
-    /// Pan tilt motor position for encoder. Range: 0 - 65535.
-    int panTiltMotorPosition{ 0 };
-    /// Pan tilt angle. Range: -180.0 - 180.0.
-    float panTiltAngle{ 0.0f };
-    /// Pan motor speed. Range: 0.0 - 100.0.
+    /// Pan motor speed. Range: -100.0 to 100.0.
     float panMotorSpeed{ 0.0f };
-    /// Tilt motor speed. Range: 0.0 - 100.0. 
+    /// Tilt motor speed. Range: -100.0 to 100.0. 
     float tiltMotorSpeed{ 0.0f };
-    /// Pan tilt motor speed. Range: 0.0 - 100.0.
-    float panTiltMotorSpeed{ 0.0f };
     /// Status defining if the pan-tilt device is connected.
     bool isConnected{ false };
-	/// Status defining if the pan-tilt device is opened.
-    bool isOpened{ false };
+	/// Status defining if the pan-tilt device is initialized.
+    bool isInitialized{ false };
     /// Init string. Format depends on target controller.
     std::string initString{ "" };
+    /// PanTilt custom parameter. Value depends on particular pan-tilt
+    /// controller. Custom parameters used when particular pan-tilt equipment
+    /// has specific unusual parameter.
+    float custom1{ 0.0f };
+    /// PanTilt custom parameter. Value depends on particular pan-tilt
+    /// controller. Custom parameters used when particular pan-tilt equipment
+    /// has specific unusual parameter.
+    float custom2{ 0.0f };
+    /// PanTilt custom parameter. Value depends on particular pan-tilt
+    /// controller. Custom parameters used when particular pan-tilt equipment
+    /// has specific unusual parameter.
+    float custom3{ 0.0f };
 
     /// Macro from ConfigReader to make params readable/writable from JSON.
     JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
-        tiltAngle, panTiltMotorPosition, panTiltAngle, panMotorSpeed, tiltMotorSpeed,
-        panTiltMotorSpeed, isConnected, isOpened, initString)
+        tiltAngle, panMotorSpeed, tiltMotorSpeed, isConnected, isInitialized,
+        initString, custom1, custom2, custom3)
 
     /// operator =
-        PanTiltParams& operator= (const PanTiltParams& src);
+    PanTiltParams& operator= (const PanTiltParams& src);
 
     /**
      * @brief Encode (serialize) params.
@@ -96,24 +104,20 @@ enum class PanTiltParam
     PAN_MOTOR_POSITION = 1,
     /// Tilt motor position for encoder. Range: 0 - 65535.
     TILT_MOTOR_POSITION,
-    /// Pan angle. Range: -180.0 - 180.0.
+    /// Pan angle. Range: -180.0 to 180.0.
     PAN_ANGLE,
-    /// Tilt angle. Range: -90.0 - 90.0.
+    /// Tilt angle. Range: -180.0 to 180.0.
     TILT_ANGLE,
-    /// Pan tilt motor position for encoder. Range: 0 - 65535.
-    PAN_TILT_MOTOR_POSITION,
-    /// Pan tilt angle. Range: -180.0 - 180.0.
-    PAN_TILT_ANGLE,
-    /// Pan motor speed. Range: 0.0 - 100.0.
+    /// Pan motor speed.  Positive speed is clockwise, 
+    /// negative is counterclockwise.
     PAN_MOTOR_SPEED,
-    /// Tilt motor speed. Range: 0.0 - 100.0.
+    /// Tilt motor speed.  Positive speed is clockwise, 
+    /// negative is counterclockwise.
     TILT_MOTOR_SPEED,
-    /// Pan tilt motor speed. Range: 0.0 - 100.0.
-    PAN_TILT_MOTOR_SPEED,
     /// Status defining if the pan-tilt device is connected.
     IS_CONNECTED,
-    /// Status defining if the pan-tilt device is opened.
-	IS_OPENED
+    /// Status defining if the pan-tilt device is initialized.
+    IS_INITIALIZED
 };
 
 /**
@@ -138,7 +142,16 @@ enum class PanTiltCommand
     /// Go to given pan and tilt angle.
     GO_TO_PAN_TILT_ANGLE,
     /// Go to home position.
-    GO_TO_HOME
+    GO_TO_HOME,
+    /// Move pan motor with given speed. Positive speed is clockwise, 
+    /// negative is counterclockwise.
+    MOVE_PAN,
+    /// Move tilt motor with given speed. Positive speed is clockwise,
+    /// negative is counterclockwise.
+	MOVE_TILT,
+	/// Move pan and tilt motors with given speed. Positive speed is clockwise,
+    /// negative is counterclockwise.
+	MOVE_PAN_TILT
 };
 
 /**
@@ -217,7 +230,8 @@ public:
      * @param id The identifier of the library command to be executed.
      * @return TRUE if the command was executed successfully, FALSE otherwise.
      */
-    virtual bool executeCommand(PanTiltCommand id, float arg = 0) = 0;
+    virtual bool executeCommand(PanTiltCommand id,
+                                      float arg1 = 0.0f, float arg2 = 0.0f) = 0;
 
     /**
      * @brief Encode set param command.
@@ -226,8 +240,8 @@ public:
      * @param id PanTilt parameter id.
      * @param value PanTilt parameter value.
      */
-    static void encodeSetParamCommand(
-        uint8_t* data, int& size, PanTiltParam id, float value);
+    static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id,
+                                                                   float value);
 
     /**
      * @brief Encode command.
@@ -235,8 +249,7 @@ public:
      * @param size Size of encoded data.
      * @param id PanTilt command ID.
      */
-    static void encodeCommand(
-        uint8_t* data, int& size, PanTiltCommand id);
+    static void encodeCommand(uint8_t* data, int& size, PanTiltCommand id);
 
     /**
      * @brief Decode command.
@@ -261,4 +274,5 @@ public:
      */
     virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 };
+}
 }
