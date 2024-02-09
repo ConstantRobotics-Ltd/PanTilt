@@ -44,7 +44,7 @@
 
 # Overview
 
-**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines data structures and rules to showcase an example structure for similar repositories. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures (**[PanTiltCommand enum](#PanTiltCommand-enum)**, **[PanTiltParam enum](#PanTiltParam-enum)** and **PanTiltParams class**) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
+**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures (**[PanTiltCommand enum](#PanTiltCommand-enum)**, **[PanTiltParam enum](#PanTiltParam-enum)** and **PanTiltParams class**) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
 
 # Versions
 
@@ -130,8 +130,8 @@ public:
         	uint8_t* data, int& size, PanTiltParam id, float value);
 
 	// Encode command.
-    static void encodeCommand(
-        uint8_t* data, int& size, PanTiltCommand id);
+	static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
+                       PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f);
 
 	// Decode command.
     static int decodeCommand(uint8_t* data,
@@ -355,26 +355,38 @@ PanTilt::encodeSetParamCommand(data, size, PanTiltParam::PAN_ANGLE, outValue);
 **encodeCommand(...)** static method encodes command for PanTilt remote control. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeCommand(...)** designed to encode COMMAND command (action command). Method declaration:
 
 ```cpp
-static void encodeCommand(uint8_t* data, int& size, PanTilt Command id);
+static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
+                       PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f);
 ```
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| data      | Pointer to data buffer for encoded command. Must have size >= 7. |
-| size      | Size of encoded data. Will be 7 bytes.                       |
+| data      | Pointer to data buffer for encoded command. Must have size >= 15. |
+| size      | Size of encoded data. Will be 15 bytes.                      |
 | id        | Command ID according to [**PanTiltCommand enum**](#PanTiltCommand-enum). |
+| arg1      | Command argument 1 value (value depends on command ID).      |
+| arg2      | Command argument 2 value (value depends on command ID).      |
 
 **COMMAND** format:
 
-| Byte | Value | Description                                     |
-| ---- | ----- | ----------------------------------------------- |
-| 0    | 0x00  | COMMAND header value.                           |
-| 1    | Major | Major version of PanTilt class.                 |
-| 2    | Minor | Minor version of PanTilt class.                 |
-| 3    | id    | Command ID **int32_t** in Little-endian format. |
-| 4    | id    | Command ID **int32_t** in Little-endian format. |
-| 5    | id    | Command ID **int32_t** in Little-endian format. |
-| 6    | id    | Command ID **int32_t** in Little-endian format. |
+| Byte | Value | Description                                               |
+| ---- | ----- | --------------------------------------------------------- |
+| 0    | 0x00  | COMMAND header value.                                     |
+| 1    | Major | Major version of PanTilt class.                           |
+| 2    | Minor | Minor version of PanTilt class.                           |
+| 3    | id    | Command ID **int32_t** in Little-endian format.           |
+| 4    | id    | Command ID **int32_t** in Little-endian format.           |
+| 5    | id    | Command ID **int32_t** in Little-endian format.           |
+| 6    | id    | Command ID **int32_t** in Little-endian format.           |
+| 7    | arg1  | Command argument value **float** in Little-endian format. |
+| 8    | arg1  | Command argument value **float** in Little-endian format. |
+| 9    | arg1  | Command argument value **float** in Little-endian format. |
+| 10   | arg1  | Command argument value **float** in Little-endian format. |
+| 11   | arg2  | Command argument value **float** in Little-endian format. |
+| 12   | arg2  | Command argument value **float** in Little-endian format. |
+| 13   | arg2  | Command argument value **float** in Little-endian format. |
+| 14   | arg2  | Command argument value **float** in Little-endian format. |
+
 
 **encodeCommand(...)** is static and used without **PanTilt** class instance. This method used on client side (control system). Command encoding example:
 
@@ -475,7 +487,7 @@ enum class PanTiltCommand
 | GO_TO_TILT_POSITION     | Go to given tilt motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
 | GO_TO_PAN_TILT_POSITION | Go to given pan and tilt motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
 | GO_TO_PAN_ANGLE         | Go to given pan angle. Valid values from -180.0° to 180.0°.  |
-| GO_TO_TILT_ANGLE        | Go to given tilt angle. Valid values from -90.0° to 90.0°.   |
+| GO_TO_TILT_ANGLE        | Go to given tilt angle. Valid values from -180.0° to 180.0°. |
 | GO_TO_PAN_TILT_ANGLE    | Go to given pan and tilt angle. Valid values from -180.0° to 180.0°. |
 | MOVE_PAN    | Move pan with set velocity given as an argument. |
 | MOVE_TILT    | Move tilt with set velocity given as an argument. |
@@ -525,7 +537,7 @@ enum class PanTiltParam
 | PAN_MOTOR_POSITION  | read / write | Pan motor position for encoder. Range: 0 to 65535.           |
 | TILT_MOTOR_POSITION | read / write | Tilt motor position for encoder. Range: 0 to 65535.          |
 | PAN_ANGLE           | read / write | Pan angle. Range: -180.0 to 180.0.                           |
-| TILT_ANGLE          | read / write | Tilt angle. Range: -90.0 - 90.0.                             |
+| TILT_ANGLE          | read / write | Tilt angle. Range: -180.0 - 180.0.                           |
 | PAN_MOTOR_SPEED     | read / write | Pan motor speed. Positive speed is clockwise, negative is counterclockwise. |
 | TILT_MOTOR_SPEED    | read / write | Tilt motor speed. Positive speed is clockwise, negative is counterclockwise. |
 | IS_CONNECTED        | read only    | Connection status (read only): 1 - pan-tilt control port connected, 0 - not connected. |
@@ -551,7 +563,7 @@ public:
     int tiltMotorPosition{ 0 };
     /// Pan angle. Range: -180.0 to 180.0.
     float panAngle{ 0.0f };
-    /// Tilt angle. Range: -90.0 to 90.0.
+    /// Tilt angle. Range: -180.0 to 180.0.
     float tiltAngle{ 0.0f };
     /// Pan motor speed. Range: -100.0 to 100.0.
     float panMotorSpeed{ 0.0f };

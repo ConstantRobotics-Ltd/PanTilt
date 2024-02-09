@@ -329,7 +329,8 @@ void cr::pantilt::PanTilt::encodeSetParamCommand(
 
 
 
-void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size, PanTiltCommand id)
+void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size, 
+									PanTiltCommand id, float arg1, float arg2)
 {
 	// Fill header.
 	data[0] = 0x00;
@@ -339,7 +340,9 @@ void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size, PanTiltComman
 	// Fill data.
 	int commandId = (int)id;
 	memcpy(&data[3], &commandId, 4);
-	size = 7;
+	memcpy(&data[7], &arg1, 4);
+	memcpy(&data[11], &arg2, 4);
+	size = 15;
 }
 
 

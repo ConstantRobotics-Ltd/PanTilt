@@ -39,7 +39,7 @@ public:
     int tiltMotorPosition{ 0 };
     /// Pan angle. Range: -180.0 to 180.0.
     float panAngle{ 0.0f };
-    /// Tilt angle. Range: -90.0 to 90.0.
+    /// Tilt angle. Range: -180.0 to 180.0.
     float tiltAngle{ 0.0f };
     /// Pan motor speed. Range: -100.0 to 100.0.
     float panMotorSpeed{ 0.0f };
@@ -253,11 +253,14 @@ public:
 
     /**
      * @brief Encode command.
-     * @param data Pointer to data buffer. Must have size >= 7.
+     * @param data Pointer to data buffer. Must have size >= 15.
      * @param size Size of encoded data.
      * @param id PanTilt command ID.
+     * @param arg1 The argument value used by the command.
+     * @param arg2 The argument value used by the command.
      */
-    static void encodeCommand(uint8_t* data, int& size, PanTiltCommand id);
+    static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
+                       PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f);
 
     /**
      * @brief Decode command.
