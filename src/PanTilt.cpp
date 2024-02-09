@@ -227,7 +227,7 @@ bool cr::pantilt::PanTiltParams::decode(uint8_t* data, int dataSize)
 	{
 		tiltMotorSpeed = 0.0f;
 	}
-	if ((data[4] & (uint8_t)2) == (uint8_t)2)
+	if ((data[3] & (uint8_t)2) == (uint8_t)2)
 	{
 		if (dataSize < pos + sizeof(isConnected))
 		{
@@ -240,7 +240,7 @@ bool cr::pantilt::PanTiltParams::decode(uint8_t* data, int dataSize)
 	{
 		isConnected = false;
 	}
-	if ((data[4] & (uint8_t)1) == (uint8_t)1)
+	if ((data[3] & (uint8_t)1) == (uint8_t)1)
 	{
 		if (dataSize < pos + sizeof(isInitialized))
 		{

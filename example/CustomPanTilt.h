@@ -87,10 +87,12 @@ public:
     /**
      * @brief Execute a PanTilt command.
      * @param id The identifier of the library command to be executed.
+     * @param arg1 The argument value used by the command.
+     * @param arg2 The argument value used by the command.
      * @return TRUE if the command was executed successfully, FALSE otherwise.
      */
-    bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f)
-                                                                       override;
+    bool executeCommand(PanTiltCommand id,
+                                float arg1 = 0.0f, float arg2 = 0.0f) override;
 
     /**
      * @brief Decode and execute command.

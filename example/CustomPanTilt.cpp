@@ -26,7 +26,7 @@ std::string cr::pantilt::CustomPanTilt::getVersion()
 bool cr::pantilt::CustomPanTilt::openPanTilt(std::string initString)
 {
 	// Set connection flags.
-	m_params.isOpened = true;
+	m_params.isInitialized = true;
 	m_params.isConnected = true;
 
 	return true;
@@ -40,7 +40,7 @@ bool cr::pantilt::CustomPanTilt::initPanTilt(PanTiltParams& params)
 	m_params = params;
 
 	// Set connection flags.
-	m_params.isOpened = true;
+	m_params.isInitialized = true;
 	m_params.isConnected = true;
 
 	return true;
@@ -51,7 +51,7 @@ bool cr::pantilt::CustomPanTilt::initPanTilt(PanTiltParams& params)
 void cr::pantilt::CustomPanTilt::closePanTilt()
 {
 	m_params.isConnected = false;
-	m_params.isOpened = false;
+	m_params.isInitialized = false;
 }
 
 
@@ -107,36 +107,6 @@ bool cr::pantilt::CustomPanTilt::setParam(PanTiltParam id, float value)
 		m_params.panMotorSpeed = value;
 		return true;
 	}
-	case PanTiltParam::PAN_TILT_ANGLE:
-	{
-		// Check value.
-		if (value < -90.0f || value > 90.0f)
-		{
-			return false;
-		}
-		m_params.panTiltAngle = value;
-		return true;
-	}
-	case PanTiltParam::PAN_TILT_MOTOR_POSITION:
-	{
-		// Check value.
-		if (static_cast<int>(value) < 0 || static_cast<int>(value) > 65535)
-		{
-			return false;
-		}
-		m_params.panTiltMotorPosition = static_cast<int>(value);
-		return true;
-	}
-	case PanTiltParam::PAN_TILT_MOTOR_SPEED:
-	{
-		// Check value.
-		if (value < 0.0f || value > 100.0f)
-		{
-			return false;
-		}
-		m_params.panTiltMotorSpeed = value;
-		return true;
-	}
 	case PanTiltParam::TILT_ANGLE:
 	{
 		// Check value.
@@ -172,10 +142,25 @@ bool cr::pantilt::CustomPanTilt::setParam(PanTiltParam id, float value)
 		// Read only.
 		return false;
 	}
-	case PanTiltParam::IS_OPENED:
+	case PanTiltParam::IS_INITIALIZED:
 	{
 		// Read only.
 		return false;
+	}
+	case PanTiltParam::CUSTOM_1:
+	{
+		// Custom parameter.
+		return true;
+	}
+	case PanTiltParam::CUSTOM_2:
+	{
+		// Custom parameter.
+		return true;
+	}
+	case PanTiltParam::CUSTOM_3:
+	{
+		// Custom parameter.
+		return true;
 	}
 	}
 
@@ -203,18 +188,6 @@ float cr::pantilt::CustomPanTilt::getParam(PanTiltParam id)
 	{
 		return m_params.panMotorSpeed;
 	}
-	case PanTiltParam::PAN_TILT_ANGLE:
-	{
-		return m_params.panTiltAngle;
-	}
-	case PanTiltParam::PAN_TILT_MOTOR_POSITION:
-	{
-		return static_cast<float>(m_params.panTiltMotorPosition);
-	}
-	case PanTiltParam::PAN_TILT_MOTOR_SPEED:
-	{
-		return m_params.panTiltMotorSpeed;
-	}
 	case PanTiltParam::TILT_ANGLE:
 	{
 		return m_params.tiltAngle;
@@ -231,9 +204,24 @@ float cr::pantilt::CustomPanTilt::getParam(PanTiltParam id)
 	{
 		return m_params.isConnected ? 1.0f : 0.0f;
 	}
-	case PanTiltParam::IS_OPENED:
+	case PanTiltParam::IS_INITIALIZED:
 	{
-		return m_params.isOpened ? 1.0f : 0.0f;
+		return m_params.isInitialized ? 1.0f : 0.0f;
+	}
+	case PanTiltParam::CUSTOM_1:
+	{
+		// Custom parameter.
+		return m_params.custom1;
+	}
+	case PanTiltParam::CUSTOM_2:
+	{
+		// Custom parameter.
+		return m_params.custom2;
+	}
+	case PanTiltParam::CUSTOM_3:
+	{
+		// Custom parameter.
+		return m_params.custom3;
 	}
 	}
 
@@ -252,7 +240,7 @@ void cr::pantilt::CustomPanTilt::getParams(PanTiltParams& params)
 
 
 bool cr::pantilt::CustomPanTilt::executeCommand(PanTiltCommand id,
-										   float arg1 = 0.0f, float arg2 = 0.0f)
+														float arg1, float arg2)
 {
 	// Check command ID.
 	switch (id)
