@@ -55,7 +55,7 @@ public:
      * @brief Get pan-tilt controller is opened status.
      * @return TRUE if the pan-tilt controller is open or FALSE if not.
      */
-    bool isPanTiltOpened() override;
+    bool isPanTiltInitialized() override;
 
     /**
      * @brief Get pan-tilt controller is connected status.

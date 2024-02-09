@@ -91,22 +91,38 @@ public:
 
     // Get the version of the PanTilt class.
     static std::string getVersion();
+    
+    // Open pan-tilt device.
+    virtual bool openPanTilt(std::string initString) = 0;
 
+    // Init pan-tilt device with parameters structure.
+    virtual bool initPanTilt(PanTiltParams& params) = 0;
+
+	// Close pan-tilt controller connection.
+    virtual void closePanTilt() = 0;
+
+	// Get pan-tilt controller is initialized status.
+    virtual bool isPanTiltInitialized() = 0;
+    
+ 	// Get pan-tilt controller is connected status.
+    virtual bool isPanTiltConnected() = 0;
+    
 	// Set the value for a specific library parameter.
     virtual bool setParam(PanTiltParam id, float value) = 0;
 
 	// Get the value of a specific library parameter.
-    virtual float getParam(PanTiltParam id) const = 0;
+    virtual float getParam(PanTiltParam id) = 0;
 
 	// Get the structure containing all library parameters.
-    virtual void getParams(PanTiltParams& params) const = 0;
+    virtual void getParams(PanTiltParams& params) = 0;
 
 	// Execute a PanTilt command.
-    virtual bool executeCommand(PanTiltCommand id) = 0;
+    virtual bool executeCommand(PanTiltCommand id,
+                            float arg1 = 0.0f, float arg2 = 0.0f) = 0;
 
 	// Encode set param command.
     static void encodeSetParamCommand(
-        uint8_t* data, int& size, PanTiltParam id, float value);
+        	uint8_t* data, int& size, PanTiltParam id, float value);
 
 	// Encode command.
     static void encodeCommand(
@@ -148,12 +164,84 @@ PanTilt class version: 1.0.0
 
 
 
-## setParam method
+## openPanTilt method
 
-**setParam(...)** method sets new parameters value. **PanTilt** based library should provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
+**openPanTilt(...)** method opens pan-tilt controller. This method can be used instead of **initPanTilt (...)** method. Method declaration:
 
 ```cpp
-bool setParam(PanTiltParam id, float value);
+virtual bool openPanTilt(std::string initString) = 0;
+```
+
+| Parameter  | Description                                                  |
+| ---------- | ------------------------------------------------------------ |
+| initString | Initialization string. Particular pan-tilt controller can have unique initialization string format. Initialization string parts have to be divided with  '**;**' symbol. Recommended pan-tilt controller initialization string for controllers which use serial port: **"/dev/ttyUSB0;9600;100"** ("/dev/ttyUSB0" - serial port name, "9600" - baudrate, "100" - serial port read timeout). |
+
+**Returns:** TRUE if the camera pan-tilt initialized or FALSE if not.
+
+
+
+## initPanTilt method
+
+**initPanTilt(...)**  method initializes pan-tilt controller with the list of parameters. This method can be used instead of **openPanTilt(...)** method (**PanTiltParams** class includes **initString**) when pan-tilt controller initialization should be launched with desired parameters. Method declaration:
+
+```cpp
+virtual bool initPanTilt(PanTiltParams& params) = 0;
+```
+
+| Parameter | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| params    | Parameters (**PanTiltParams** class). PanTiltParams class includes initString wich used in **openPanTilt(...)** method. See description of **PanTiltParams** class. |
+
+**Returns:** TRUE if the pan-tilt controller initialized or FALSE if not.
+
+
+
+## closePanTilt method
+
+**initPanTilt(...)** method designed to close connection to pan-tilt. Method declaration:
+
+```cpp
+virtual void closePanTilt() = 0;
+```
+
+
+
+## isPanTiltInitialized method
+
+**isPanTiltInitialized(...)** method returns camera initialization status. This status shows if the camera controller was initialized but doesn't show, if camera controller has communication with pan-tilt equipment. For example, if pan-tilt has serial port and camera controller connected to serial port (opens serial port file in OS) but camera may be not active (no power). In this case `is Initialized` status just shows that pan-tilt controller has opened serial port. Method declaration:
+
+```cpp
+virtual bool isPanTiltInitialized() = 0;
+```
+
+**Returns:** TRUE if the pan-tiltcontroller initialized or FALSE if not.
+
+
+
+## isPanTiltConnected method
+
+**isPanTiltConnected(...)** is a method designed to ascertain the connection status of the pan-tilt system. This status indicates whether the pan-tilt controller is actively communicating with the pan-tilt equipment. For instance, if the pan-tilt unit is physically connected to the controller via a serial port (with the port open in the operating system), but the unit itself is inactive due to a lack of power, the method will return FALSE, signifying no data exchange. Conversely, if the pan-tilt system is successfully communicating with the camera equipment, the method will return TRUE. It's important to note that if the camera controller is not initialized, the connection status will always be FALSE.
+Method declaration:
+
+```cpp
+virtual bool isPanTiltConnected() = 0;
+```
+
+| Parameter | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| id        | Parameter ID according to [PanTiltParam](#PanTiltParam-enum) enum. |
+| value     | Parameter value. Value depends on parameter ID.              |
+
+**Returns:** TRUE if the pan-tilt controller has data exchange with camera equipment or FALSE if not.
+
+
+
+## setParam method
+
+**setParam (...)** method sets new parameters value. **PanTilt** based library should provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
+
+```cpp
+virtual bool setParam(PanTiltParam id, float value) = 0;
 ```
 
 | Parameter | Description                                                  |
@@ -170,7 +258,7 @@ bool setParam(PanTiltParam id, float value);
 **getParam(...)** method returns parameter value. **PanTilt** based library should provide thread-safe **getParam(...)** method call. This means that the **getParam(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
-float getParam(PanTiltParam id);
+virtual float getParam(PanTiltParam id) = 0;
 ```
 
 | Parameter | Description                                                  |
@@ -186,7 +274,7 @@ float getParam(PanTiltParam id);
 **getParams(...)** method is designed to obtain params structure. **PanTilt** based library should provide thread-safe **getParams(...)** method call. This means that the **getParams(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
-void getParams(PanTiltParams& params);
+virtual void getParams(PanTiltParams& params) = 0;
 ```
 
 | Parameter | Description                                                  |
@@ -200,7 +288,7 @@ void getParams(PanTiltParams& params);
 **executeCommand(...)** method executes library command. **PanTilt** based library should provide thread-safe **executeCommand(...)** method call. This means that the **executeCommand(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
-bool executeCommand(PanTiltCommand id);
+virtual bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f) = 0;
 ```
 
 | Parameter | Description                                                  |
@@ -359,7 +447,16 @@ enum class PanTiltCommand
     /// Go to given pan and tilt angle.
     GO_TO_PAN_TILT_ANGLE,
     /// Go to home position.
-    GO_TO_HOME
+    GO_TO_HOME,
+    /// Move pan motor with given speed. Positive speed is clockwise, 
+    /// negative is counterclockwise.
+    MOVE_PAN,
+    /// Move tilt motor with given speed. Positive speed is clockwise,
+    /// negative is counterclockwise.
+	MOVE_TILT,
+	/// Move pan and tilt motors with given speed. Positive speed is clockwise,
+    /// negative is counterclockwise. First argument is pan speed, second is tilt speed.
+	MOVE_PAN_TILT
 };
 ```
 
@@ -375,6 +472,9 @@ enum class PanTiltCommand
 | GO_TO_PAN_ANGLE         | Go to given pan angle. Valid values from -180.0° to 180.0°.  |
 | GO_TO_TILT_ANGLE        | Go to given tilt angle. Valid values from -90.0° to 90.0°.   |
 | GO_TO_PAN_TILT_ANGLE    | Go to given pan and tilt angle. Valid values from -180.0° to 180.0°. |
+| MOVE_PAN    | Move pan with set velocity given as an argument. |
+| MOVE_TILT    | Move tilt with set velocity given as an argument. |
+| MOVE_PAN_TILT    | Move pan with set velocity given as first argument and tilt with second. |
 | GO_TO_HOME              | Go to home position.                                         |
 
 
@@ -390,36 +490,41 @@ enum class PanTiltParam
     PAN_MOTOR_POSITION = 1,
     /// Tilt motor position for encoder. Range: 0 - 65535.
     TILT_MOTOR_POSITION,
-    /// Pan angle. Range: -180.0 - 180.0.
+    /// Pan angle. Range: -180.0 to 180.0.
     PAN_ANGLE,
-    /// Tilt angle. Range: -90.0 - 90.0.
+    /// Tilt angle. Range: -180.0 to 180.0.
     TILT_ANGLE,
-    /// Pan tilt motor position for encoder. Range: 0 - 65535.
-    PAN_TILT_MOTOR_POSITION,
-    /// Pan tilt angle. Range: -180.0 - 180.0.
-    PAN_TILT_ANGLE,
-    /// Pan motor speed. Range: 0.0 - 100.0.
+    /// Pan motor speed. Positive speed is clockwise, 
+    /// negative is counterclockwise.
     PAN_MOTOR_SPEED,
-    /// Tilt motor speed. Range: 0.0 - 100.0.
+    /// Tilt motor speed. Positive speed is clockwise, 
+    /// negative is counterclockwise.
     TILT_MOTOR_SPEED,
-    /// Pan tilt motor speed. Range: 0.0 - 100.0.
-    PAN_TILT_MOTOR_SPEED
+    /// Status defining if the pan-tilt device is connected.
+    IS_CONNECTED,
+    /// Status defining if the pan-tilt device is initialized.
+    IS_INITIALIZED, 
+    /// Camera custom param. Value depends on implementation.
+    CUSTOM_1,
+    /// Camera custom param. Value depends on implementation.
+    CUSTOM_2,
+    /// Camera custom param. Value depends on implementation.
+    CUSTOM_3
 };
 ```
 
 **Table 3** - Params description.
 
-| Parameter               | Access       | Description                                            |
-| ----------------------- | ------------ | ------------------------------------------------------ |
-| PAN_MOTOR_POSITION      | read / write | Pan motor position for encoder. Range: 0 to 65535.     |
-| TILT_MOTOR_POSITION     | read / write | Tilt motor position for encoder. Range: 0 to 65535.    |
-| PAN_ANGLE               | read / write | Pan angle. Range: -180.0 to 180.0.                     |
-| TILT_ANGLE              | read / write | Tilt angle. Range: -90.0 - 90.0.                       |
-| PAN_TILT_MOTOR_POSITION | read / write | Pan tilt motor position for encoder. Range: 0 - 65535. |
-| PAN_TILT_ANGLE          | read / write | Pan tilt angle. Range: -180.0 - 180.0.                 |
-| PAN_MOTOR_SPEED         | read / write | Pan motor speed. Range: 0.0 - 100.0.                   |
-| TILT_MOTOR_SPEED        | read / write | Tilt motor speed. Range: 0.0 - 100.0.                  |
-| PAN_TILT_MOTOR_SPEED    | read / write | Pan tilt motor speed. Range: 0.0 - 100.0.              |
+| Parameter           | Access       | Description                                                  |
+| ------------------- | ------------ | ------------------------------------------------------------ |
+| PAN_MOTOR_POSITION  | read / write | Pan motor position for encoder. Range: 0 to 65535.           |
+| TILT_MOTOR_POSITION | read / write | Tilt motor position for encoder. Range: 0 to 65535.          |
+| PAN_ANGLE           | read / write | Pan angle. Range: -180.0 to 180.0.                           |
+| TILT_ANGLE          | read / write | Tilt angle. Range: -90.0 - 90.0.                             |
+| PAN_MOTOR_SPEED     | read / write | Pan motor speed. Positive speed is clockwise, negative is counterclockwise. |
+| TILT_MOTOR_SPEED    | read / write | Tilt motor speed. Positive speed is clockwise, negative is counterclockwise. |
+| IS_CONNECTED        | read only    | Connection status (read only): 1 - pan-tilt control port connected, 0 - not connected. |
+| IS_INITIALIZED      | read only    | Initialization status (read only): 1 - pan-tilt control port initialized, 0 - not initialized. |
 
 
 
@@ -435,30 +540,41 @@ enum class PanTiltParam
 class PanTiltParams
 {
 public:
-
     /// Pan motor position for encoder. Range: 0 - 65535.
     int panMotorPosition{ 0 };
     /// Tilt motor position for encoder. Range: 0 - 65535.
     int tiltMotorPosition{ 0 };
-    /// Pan angle. Range: -180.0 - 180.0.
+    /// Pan angle. Range: -180.0 to 180.0.
     float panAngle{ 0.0f };
-    /// Tilt angle. Range: -90.0 - 90.0.
+    /// Tilt angle. Range: -90.0 to 90.0.
     float tiltAngle{ 0.0f };
-    /// Pan tilt motor position for encoder. Range: 0 - 65535.
-    int panTiltMotorPosition{ 0 };
-    /// Pan tilt angle. Range: -180.0 - 180.0.
-    float panTiltAngle{ 0.0f };
-    /// Pan motor speed. Range: 0.0 - 100.0.
+    /// Pan motor speed. Range: -100.0 to 100.0.
     float panMotorSpeed{ 0.0f };
-    /// Tilt motor speed. Range: 0.0 - 100.0. 
+    /// Tilt motor speed. Range: -100.0 to 100.0. 
     float tiltMotorSpeed{ 0.0f };
-    /// Pan tilt motor speed. Range: 0.0 - 100.0.
-    float panTiltMotorSpeed{ 0.0f };
-    
+    /// Status defining if the pan-tilt device is connected.
+    bool isConnected{ false };
+	/// Status defining if the pan-tilt device is initialized.
+    bool isInitialized{ false };
+    /// Init string. Format depends on target controller.
+    std::string initString{ "" };
+    /// PanTilt custom parameter. Value depends on particular pan-tilt
+    /// controller. Custom parameters used when particular pan-tilt equipment
+    /// has specific unusual parameter.
+    float custom1{ 0.0f };
+    /// PanTilt custom parameter. Value depends on particular pan-tilt
+    /// controller. Custom parameters used when particular pan-tilt equipment
+    /// has specific unusual parameter.
+    float custom2{ 0.0f };
+    /// PanTilt custom parameter. Value depends on particular pan-tilt
+    /// controller. Custom parameters used when particular pan-tilt equipment
+    /// has specific unusual parameter.
+    float custom3{ 0.0f };
+
     /// Macro from ConfigReader to make params readable/writable from JSON.
     JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
-        tiltAngle, panTiltMotorPosition, panTiltAngle, panMotorSpeed, tiltMotorSpeed,
-        panTiltMotorSpeed)
+        tiltAngle, panMotorSpeed, tiltMotorSpeed, isConnected, isInitialized,
+        initString, custom1, custom2, custom3)
 
     /// operator =
         PanTiltParams& operator= (const PanTiltParams& src);
@@ -479,11 +595,14 @@ public:
 | tiltMotorPosition    | int   | Tilt motor position for encoder. Range: 0 - 65535.     |
 | panAngle             | float | Pan angle. Range: -180.0 - 180.0.                      |
 | tiltAngle            | float | Tilt angle. Range: -90.0 - 90.0.                       |
-| panTiltMotorPosition | int   | Pan tilt motor position for encoder. Range: 0 - 65535. |
-| panTiltAngle         | float | Pan tilt angle. Range: -180.0 - 180.0.                 |
 | panMotorSpeed        | float | Pan motor speed. Range: 0.0 - 100.0.                   |
 | tiltMotorSpeed       | float | Tilt motor speed. Range: 0.0 - 100.0.                  |
-| panTiltMotorSpeed    | float | Pan tilt motor speed. Range: 0.0 - 100.0.              |
+| isConnected    | bool | Status defining if the pan-tilt device is connected.              |
+| isInitialized | bool | Status defining if the pan-tilt device is initialized. |
+| initString         | std::string | Init string. Format depends on target controller.                 |
+| custom1         | float | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
+| custom2 | float | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
+| custom3 | float | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
 
 **None:** *PanTiltParams class fields listed in Table 4 **have to** reflect params set/get by methods setParam(...) and getParam(...).* 
 
@@ -515,11 +634,13 @@ struct PanTiltParamsMask
     bool tiltMotorPosition{ true };
     bool panAngle{ true };
     bool tiltAngle{ true };
-    bool panTiltMotorPosition{ true };
-    bool panTiltAngle{ true };
     bool panMotorSpeed{ true };
     bool tiltMotorSpeed{ true };
-    bool panTiltMotorSpeed{ true };
+    bool isConnected{ true };
+    bool isInitialized{ true };
+    bool custom1{ true };
+    bool custom2{ true };
+    bool custom3{ true };
 };
 ```
 
@@ -623,11 +744,13 @@ if(!outConfig.readFromFile("PanTiltParams.json"))
         "tiltMotorPosition": 10500,
         "panAngle": 30.5f,
         "tiltAngle": 89.9f,
-        "panTiltMotorPosition": 300,
-        "panTiltAngle": 60.0f,
         "panMotorSpeed": 50.0f,
         "tiltMotorSpeed": 100.0f,
-        "panTiltMotorSpeed": 10.5f
+        "isConnected": true,
+        "isInitialized": true,
+        "custom1": 0.7f,
+        "custom2": 12.0f,
+        "custom3": 0.61f
     }
 }
 ```
@@ -764,7 +887,22 @@ public:
 
     // Get the version of the PanTilt class.
     static std::string getVersion();
+	
+    // Open pan-tilt device.
+    bool openPanTilt(std::string initString) override;
 
+    // Init pan-tilt device with parameters structure.
+    bool initPanTilt(PanTiltParams& params) override;
+
+	// Close pan-tilt controller connection.
+    void closePanTilt() override;
+
+	// Get pan-tilt controller is initialized status.
+    bool isPanTiltInitialized() override;
+    
+ 	// Get pan-tilt controller is connected status.
+    bool isPanTiltConnected() override;
+    
  	// Set the value for a specific library parameter.
     bool setParam(PanTiltParam id, float value) override;
 

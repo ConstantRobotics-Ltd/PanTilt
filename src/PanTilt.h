@@ -108,16 +108,22 @@ enum class PanTiltParam
     PAN_ANGLE,
     /// Tilt angle. Range: -180.0 to 180.0.
     TILT_ANGLE,
-    /// Pan motor speed.  Positive speed is clockwise, 
+    /// Pan motor speed. Positive speed is clockwise, 
     /// negative is counterclockwise.
     PAN_MOTOR_SPEED,
-    /// Tilt motor speed.  Positive speed is clockwise, 
+    /// Tilt motor speed. Positive speed is clockwise, 
     /// negative is counterclockwise.
     TILT_MOTOR_SPEED,
     /// Status defining if the pan-tilt device is connected.
     IS_CONNECTED,
     /// Status defining if the pan-tilt device is initialized.
-    IS_INITIALIZED
+    IS_INITIALIZED,
+    /// Camera custom param. Value depends on implementation.
+    CUSTOM_1,
+    /// Camera custom param. Value depends on implementation.
+    CUSTOM_2,
+    /// Camera custom param. Value depends on implementation.
+    CUSTOM_3
 };
 
 /**
@@ -150,7 +156,7 @@ enum class PanTiltCommand
     /// negative is counterclockwise.
 	MOVE_TILT,
 	/// Move pan and tilt motors with given speed. Positive speed is clockwise,
-    /// negative is counterclockwise.
+    /// negative is counterclockwise. First argument is pan speed, second is tilt speed.
 	MOVE_PAN_TILT
 };
 
@@ -196,7 +202,7 @@ public:
      * @brief Get pan-tilt controller is opened status.
      * @return TRUE if the pan-tilt controller is open or FALSE if not.
      */
-    virtual bool isPanTiltOpened() = 0;
+    virtual bool isPanTiltInitialized() = 0;
 
     /**
      * @brief Get pan-tilt controller is connected status.
