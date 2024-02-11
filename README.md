@@ -44,15 +44,17 @@
 
 # Overview
 
-**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures (**[PanTiltCommand enum](#PanTiltCommand-enum)**, **[PanTiltParam enum](#PanTiltParam-enum)** and **PanTiltParams class**) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
+**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#PanTiltCommand-enum), [PanTiltParam enum](#PanTiltParam-enum) and **PanTiltParams** class) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
+
+
 
 # Versions
 
 **Table 1** - Library versions.
 
-| Version | Release date | What's new                          |
-| ------- | ------------ | ----------------------------------- |
-| 1.0.0   | 06.02.2024   | - First version of PanTilt library. |
+| Version | Release date | What's new                                    |
+| ------- | ------------ | --------------------------------------------- |
+| 1.0.0   | 06.02.2024   | - First version of PanTilt interface library. |
 
 
 
@@ -61,19 +63,25 @@
 The **PanTilt** is a CMake project. Library files:
 
 ```xml
-CMakeLists.txt ------------------- Main CMake file of the library.
-3rdparty ------------------------- Folder with third-party libraries.
-    CMakeLists.txt --------------- CMake file which includes third-party libraries.
-    ConfigReader ----------------- Source code of the ConfigReader library.
-test ----------------------------- Folder for internal tests of library.
-    CMakeLists.txt --------------- CMake file for tests application.
-    main.cpp --------------------- Source code file tests application.
-src ------------------------------ Folder with source code of the library.
-    CMakeLists.txt --------------- CMake file of the library.
-    PanTilt.cpp ------------------ Source code file of the library.
-    PanTilt.h -------------------- Header file which includes PanTilt class declaration.
-    PanTiltVersion.h ------------- Header file which includes version of the library.
-    PanTiltVersion.h.in ---------- CMake service file to generate version file.
+CMakeLists.txt ----------------- Main CMake file of the library.
+3rdparty ----------------------- Folder with third-party libraries.
+    CMakeLists.txt ------------- CMake file to include third-party libraries.
+    ConfigReader --------------- Source code of the ConfigReader library.
+test --------------------------- Folder for internal tests of library.
+    CMakeLists.txt ------------- CMake file for tests application.
+    main.cpp ------------------- Source code file of test application.
+src ---------------------------- Folder with source code of the library.
+    CMakeLists.txt ------------- CMake file of the library.
+    PanTilt.cpp ---------------- Source code file of the library.
+    PanTilt.h ------------------ Header file which includes PanTilt class declaration.
+    PanTiltVersion.h ----------- Header file which includes version of the library.
+    PanTiltVersion.h.in -------- CMake service file to generate version file.
+example ------------------------ Folder with source code of the custom PanTilt implementation.
+    CMakeLists.txt ------------- CMake file of the library.
+    CustomPanTilt.cpp ---------- Source code file of the custom PanTilt implementation.
+    CustomPanTilt.h ------------ Header file which includes custom PanTilt class declaration.
+    CustomPanTiltVersion.h ----- Header file which includes version of the library.
+    CustomPanTiltVersion.h.in -- CMake service file to generate version file.
 ```
 
 
@@ -91,56 +99,57 @@ class PanTilt
 {
 public:
    
-    // Class virtual destructor.
+    /// Class virtual destructor.
     virtual ~PanTilt();
 
-    // Get the version of the PanTilt class.
+    /// Get the version of the PanTilt class.
     static std::string getVersion();
     
-    // Open pan-tilt device.
+    /// Open pan-tilt device.
     virtual bool openPanTilt(std::string initString) = 0;
 
-    // Init pan-tilt device with parameters structure.
+    /// Init pan-tilt device with parameters structure.
     virtual bool initPanTilt(PanTiltParams& params) = 0;
 
-	// Close pan-tilt controller connection.
+	/// Close pan-tilt controller connection.
     virtual void closePanTilt() = 0;
 
-	// Get pan-tilt controller is initialized status.
+	/// Get pan-tilt controller is initialized status.
     virtual bool isPanTiltInitialized() = 0;
     
- 	// Get pan-tilt controller is connected status.
+ 	/// Get pan-tilt controller is connected status.
     virtual bool isPanTiltConnected() = 0;
     
-	// Set the value for a specific library parameter.
+	/// Set the value for a specific library parameter.
     virtual bool setParam(PanTiltParam id, float value) = 0;
 
-	// Get the value of a specific library parameter.
+	/// Get the value of a specific library parameter.
     virtual float getParam(PanTiltParam id) = 0;
 
-	// Get the structure containing all library parameters.
+	/// Get the structure containing all library parameters.
     virtual void getParams(PanTiltParams& params) = 0;
 
-	// Execute a PanTilt command.
-    virtual bool executeCommand(PanTiltCommand id,
-                            float arg1 = 0.0f, float arg2 = 0.0f) = 0;
+	/// Execute a PanTilt command.
+    virtual bool executeCommand(
+            PanTiltCommand id, float arg1 = 0.0f,
+            float arg2 = 0.0f) = 0;
 
-	// Encode set param command.
+	/// Encode set param command.
     static void encodeSetParamCommand(
-        	uint8_t* data, int& size, PanTiltParam id, float value);
+            uint8_t* data, int& size,
+            PanTiltParam id, float value);
 
-	// Encode command.
-	static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
-                       PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f);
+	/// Encode command.
+	static void cr::pantilt::PanTilt::encodeCommand(
+            uint8_t* data, int& size, PanTiltCommand id,
+            float arg1 = 0.0f, float arg2 = 0.0f);
 
-	// Decode command.
-    static int decodeCommand(uint8_t* data,
-        int size,
-        PanTiltParam& paramId,
-        PanTiltCommand& commandId,
-        float& value);
+	/// Decode command.
+    static int decodeCommand(
+            uint8_t* data, int size, PanTiltParam& paramId,
+            PanTiltCommand& commandId, float& value);
 
-	// Decode and execute command.
+	/// Decode and execute command.
     virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 };
 ```
@@ -187,7 +196,7 @@ virtual bool openPanTilt(std::string initString) = 0;
 
 ## initPanTilt method
 
-**initPanTilt(...)**  method initializes pan-tilt controller with the list of parameters. This method can be used instead of **openPanTilt(...)** method (**PanTiltParams** class includes **initString**) when pan-tilt controller initialization should be launched with desired parameters. Method declaration:
+**initPanTilt(...)** method initializes pan-tilt controller with the list of parameters. This method can be used instead of **openPanTilt(...)** method (**PanTiltParams** class includes **initString**) when pan-tilt controller initialization should be launched with desired parameters. Method declaration:
 
 ```cpp
 virtual bool initPanTilt(PanTiltParams& params) = 0;
@@ -219,14 +228,13 @@ virtual void closePanTilt() = 0;
 virtual bool isPanTiltInitialized() = 0;
 ```
 
-**Returns:** TRUE if the pan-tiltcontroller initialized or FALSE if not.
+**Returns:** TRUE if the pan-tilt controller initialized or FALSE if not.
 
 
 
 ## isPanTiltConnected method
 
-**isPanTiltConnected(...)** is a method designed to ascertain the connection status of the pan-tilt system. This status indicates whether the pan-tilt controller is actively communicating with the pan-tilt equipment. For instance, if the pan-tilt unit is physically connected to the controller via a serial port (with the port open in the operating system), but the unit itself is inactive due to a lack of power, the method will return FALSE, signifying no data exchange. Conversely, if the pan-tilt system is successfully communicating with the camera equipment, the method will return TRUE. It's important to note that if the camera controller is not initialized, the connection status will always be FALSE.
-Method declaration:
+**isPanTiltConnected(...)** is a method designed to ascertain the connection status of the pan-tilt system. This status indicates whether the pan-tilt controller is actively communicating with the pan-tilt equipment. For instance, if the pan-tilt unit is physically connected to the controller via a serial port (with the port open in the operating system), but the unit itself is inactive due to a lack of power, the method will return FALSE, signifying no data exchange. Conversely, if the pan-tilt system is successfully communicating with the camera equipment, the method will return TRUE. It's important to note that if the camera controller is not initialized, the connection status will always be FALSE. Method declaration:
 
 ```cpp
 virtual bool isPanTiltConnected() = 0;
@@ -435,6 +443,8 @@ virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 | size      | Size of command. Must be 11 bytes for SET_PARAM or 7 bytes for COMMAND. |
 
 **Returns:** TRUE if command decoded (SET_PARAM or COMMAND) and executed (action command or set param command).
+
+
 
 # Data structures
 
@@ -896,43 +906,45 @@ class CustomPanTilt : public PanTilt
 {
 public:
 
-    // Class constructor.
+    /// Class constructor.
     CustomPanTilt();
 
-    // Class destructor.
+    /// Class destructor.
     ~CustomPanTilt();
 
-    // Get the version of the PanTilt class.
+    /// Get the version of the PanTilt class.
     static std::string getVersion();
-	
-    // Open pan-tilt device.
-    bool openPanTilt(std::string initString) override;
-
-    // Init pan-tilt device with parameters structure.
-    bool initPanTilt(PanTiltParams& params) override;
-
-	// Close pan-tilt controller connection.
-    void closePanTilt() override;
-
-	// Get pan-tilt controller is initialized status.
-    bool isPanTiltInitialized() override;
     
- 	// Get pan-tilt controller is connected status.
-    bool isPanTiltConnected() override;
+    /// Open pan-tilt device.
+    virtual bool openPanTilt(std::string initString);
+
+    /// Init pan-tilt device with parameters structure.
+    virtual bool initPanTilt(PanTiltParams& params);
+
+	/// Close pan-tilt controller connection.
+    virtual void closePanTilt();
+
+	/// Get pan-tilt controller is initialized status.
+    virtual bool isPanTiltInitialized();
     
- 	// Set the value for a specific library parameter.
-    bool setParam(PanTiltParam id, float value) override;
+ 	/// Get pan-tilt controller is connected status.
+    virtual bool isPanTiltConnected();
+    
+	/// Set the value for a specific library parameter.
+    virtual bool setParam(PanTiltParam id, float value);
 
-    // Get the value of a specific library parameter.
-    float getParam(PanTiltParam id) override;
+	/// Get the value of a specific library parameter.
+    virtual float getParam(PanTiltParam id);
 
-    // Get the structure containing all library parameters.
-    void getParams(PanTiltParams& params) override;
+	/// Get the structure containing all library parameters.
+    virtual void getParams(PanTiltParams& params);
 
-    // Execute a PanTilt command.
-    bool executeCommand(PanTiltCommand id) override;
+	/// Execute a PanTilt command.
+    bool executeCommand(
+            PanTiltCommand id, float arg1 = 0.0f,
+            float arg2 = 0.0f);
 
-    // Decode and execute command.
+	/// Decode and execute command.
     bool decodeAndExecuteCommand(uint8_t* data, int size);
 
 private:

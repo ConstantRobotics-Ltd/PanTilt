@@ -9,7 +9,7 @@ namespace cr
 namespace pantilt
 {
 /**
- * @brief Mask for PanTilt library params for encoding (serializing).
+ * @brief Mask for PanTilt params for encoding (serializing).
  */
 struct PanTiltParamsMask
 {
@@ -96,7 +96,7 @@ public:
 };
 
 /**
- * @brief Enum of PanTilt library params.
+ * @brief Enum of PanTilt params.
  */
 enum class PanTiltParam
 {
