@@ -56,7 +56,7 @@ void cr::pantilt::CustomPanTilt::closePanTilt()
 
 
 
-bool cr::pantilt::CustomPanTilt::isPanTiltInitialized()
+bool cr::pantilt::CustomPanTilt::isPanTiltOpen()
 {
 	return m_params.isInitialized;
 }

@@ -199,10 +199,10 @@ public:
     virtual void closePanTilt() = 0;
 
     /**
-     * @brief Get pan-tilt controller is opened status.
+     * @brief Get pan-tilt controller is open status.
      * @return TRUE if the pan-tilt controller is open or FALSE if not.
      */
-    virtual bool isPanTiltInitialized() = 0;
+    virtual bool isPanTiltOpen() = 0;
 
     /**
      * @brief Get pan-tilt controller is connected status.
