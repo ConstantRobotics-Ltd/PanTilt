@@ -4,47 +4,47 @@
 
 # **PanTilt C++ library**
 
-**v1.0.0**
+**v1.0.1**
 
 
 
 # Table of contents
 
-- [Overview](#Overview)
-- [Versions](#Versions)
-- [Library files](#Library-files)
-- [PanTilt interface class description](#PanTilt-interface-class-description)
-  - [Class declaration](#Class-declaration)
-  - [getVersion method](#getVersion-method)
-  - [openPanTilt method](#openPanTilt-method)
-  - [initPanTilt method](#initPanTilt-method)
-  - [closePanTilt method](#closePanTilt-method)
-  - [isPanTiltInitialized method](#isPanTiltInitialized-method)
-  - [isPanTiltConnected method](#isPanTiltConnected-method)
-  - [setParam method](#setParam-method)
-  - [getParam method](#getParam-method)
-  - [getParams method](#getParams-method)
-  - [executeCommand method](#executeCommand-method)
-  - [encodeSetParamCommand method](#encodeSetParamCommand-method)
-  - [encodeCommand method](#encodeCommand-method)
-  - [decodeCommand method](#decodeCommand-method) 
-  - [decodeAndExecuteCommand method](#decodeAndExecuteCommand-method)
-- [Data structures](#Data-structures)
-  - [PanTiltCommand enum](#PanTiltCommand-enum)
-  - [PanTiltParam enum](#PanTiltParam-enum)
-- [PanTiltParams class description](#PanTiltParams-class-description)
-  - [Class declaration](#Class-declaration)
-  - [Serialize PanTilt params](#Serialize-PanTilt-params)
-  - [Deserialize PanTilt params](#Deserialize-PanTilt-params)
-  - [Read params from JSON file and write to JSON file](#Read-params-from-JSON-file-and-write-to-JSON-file)
-- [Build and connect to your project](#Build-and-connect-to-your-project)
-- [How to make custom implementation](#How-to-make-custom-implementation)
+- [Overview](#overview)
+- [Versions](#versions)
+- [Library files](#library-files)
+- [PanTilt interface class description](#pantilt-interface-class-description)
+  - [Class declaration](#class-declaration)
+  - [getVersion method](#geversion-method)
+  - [openPanTilt method](#openpantilt-method)
+  - [initPanTilt method](#initpantilt-method)
+  - [closePanTilt method](#closepantilt-method)
+  - [isPanTiltInitialized method](#ispantiltinitialized-method)
+  - [isPanTiltConnected method](#ispantiltconnected-method)
+  - [setParam method](#setparam-method)
+  - [getParam method](#getparam-method)
+  - [getParams method](#getparams-method)
+  - [executeCommand method](#executecommand-method)
+  - [encodeSetParamCommand method](#encodesetparamcommand-method)
+  - [encodeCommand method](#encodecommand-method)
+  - [decodeCommand method](#decodecommand-method) 
+  - [decodeAndExecuteCommand method](#decodeandexecutecommand-method)
+- [Data structures](#data-structures)
+  - [PanTiltCommand enum](#pantiltcommand-enum)
+  - [PanTiltParam enum](#pantiltparam-enum)
+- [PanTiltParams class description](#pantiltparams-class-description)
+  - [Class declaration](#class-declaration)
+  - [Serialize PanTilt params](#serialize-pantilt-params)
+  - [Deserialize PanTilt params](#deserialize-pantilt-params)
+  - [Read params from JSON file and write to JSON file](#read-params-from-json-file-and-write-to-json-file)
+- [Build and connect to your project](#build-and-connect-to-your-project)
+- [How to make custom implementation](#how-to-make-custom-implementation)
 
 
 
 # Overview
 
-**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#PanTiltCommand-enum), [PanTiltParam enum](#PanTiltParam-enum) and **PanTiltParams** class) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
+**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum), [PanTiltParam enum](#pantiltparam-enum) and **PanTiltParams** class) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
 
 
 
@@ -55,6 +55,7 @@
 | Version | Release date | What's new                                    |
 | ------- | ------------ | --------------------------------------------- |
 | 1.0.0   | 06.02.2024   | - First version of PanTilt interface library. |
+| 1.0.1   | 23.04.2024   | - Documentation updated for website.          |
 
 
 
@@ -173,7 +174,7 @@ std::cout << "PanTilt version: " << cr::pantilt::PanTilt::getVersion();
 Console output:
 
 ```bash
-PanTilt class version: 1.0.0
+PanTilt class version: 1.0.1
 ```
 
 
@@ -242,7 +243,7 @@ virtual bool isPanTiltConnected() = 0;
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Parameter ID according to [PanTiltParam](#PanTiltParam-enum) enum. |
+| id        | Parameter ID according to [PanTiltParam](#pantiltparam-enum) enum. |
 | value     | Parameter value. Value depends on parameter ID.              |
 
 **Returns:** TRUE if the pan-tilt controller has data exchange with camera equipment or FALSE if not.
@@ -259,7 +260,7 @@ virtual bool setParam(PanTiltParam id, float value) = 0;
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Parameter ID according to [PanTiltParam](#PanTiltParam-enum) enum. |
+| id        | Parameter ID according to [PanTiltParam](#pantiltparam-enum) enum. |
 | value     | Parameter value. Value depends on parameter ID.              |
 
 **Returns:** TRUE if the parameter was set or FALSE if not.
@@ -276,7 +277,7 @@ virtual float getParam(PanTiltParam id) = 0;
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Parameter ID according to [PanTiltParam](#PanTiltParam-enum) enum. |
+| id        | Parameter ID according to [PanTiltParam](#pantiltparam-enum) enum. |
 
 **Returns:** parameter value or **-1** if the parameters doesn't exist.
 
@@ -292,7 +293,7 @@ virtual void getParams(PanTiltParams& params) = 0;
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| params    | Reference to [PanTiltParams](#PanTiltParams-class-description) object to store params. |
+| params    | Reference to [PanTiltParams](#pantiltparams-class-description) object to store params. |
 
 
 
@@ -306,7 +307,7 @@ virtual bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Command  ID according to [PanTiltCommand](#PanTiltCommand-enum) enum. |
+| id        | Command  ID according to [PanTiltCommand](#pantiltcommand-enum) enum. |
 
 **Returns:** TRUE if the command executed or FALSE if not.
 
@@ -324,7 +325,7 @@ static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id, flo
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to data buffer for encoded command. Must have size >= 11. |
 | size      | Size of encoded data. Will be 11 bytes.                      |
-| id        | Parameter ID according to [**PanTilt enum**](#PanTilt-enum). |
+| id        | Parameter ID according to [**PanTilt enum**](#pantilt-enum). |
 | value     | Parameter value.                                             |
 
 **SET_PARAM** command format:
@@ -371,7 +372,7 @@ static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to data buffer for encoded command. Must have size >= 15. |
 | size      | Size of encoded data. Will be 15 bytes.                      |
-| id        | Command ID according to [**PanTiltCommand enum**](#PanTiltCommand-enum). |
+| id        | Command ID according to [**PanTiltCommand enum**](#pantiltcommand-enum). |
 | arg1      | Command argument 1 value (value depends on command ID).      |
 | arg2      | Command argument 2 value (value depends on command ID).      |
 
@@ -421,8 +422,8 @@ static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId, PanTilt
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to input command.                                    |
 | size      | Size of command. Must be 11 bytes for SET_PARAM and 7 bytes for COMMAND. |
-| paramId   | PanTilt parameter ID according to [**PanTiltParam enum**](#PanTiltParam-enum). After decoding SET_PARAM command the method will return parameter ID. |
-| commandId | PanTilt command ID according to [**PanTiltCommand enum**](#PanTiltCommand-enum). After decoding COMMAND the method will return command ID. |
+| paramId   | PanTilt parameter ID according to [**PanTiltParam enum**](#pantiltparam-enum). After decoding SET_PARAM command the method will return parameter ID. |
+| commandId | PanTilt command ID according to [**PanTiltCommand enum**](#pantiltcommand-enum). After decoding COMMAND the method will return command ID. |
 | value     | PanTilt parameter value (after decoding SET_PARAM command).  |
 
 **Returns:** **0** - in case decoding COMMAND, **1** - in case decoding SET_PARAM command or **-1** in case errors.
@@ -614,7 +615,7 @@ public:
 };
 ```
 
-**Table 4** - **PanTiltParams** class fields description is related to [PanTiltParam enum](#PanTiltParam-enum) description.
+**Table 4** - **PanTiltParams** class fields description is related to [PanTiltParam enum](#pantiltparam-enum) description.
 
 | Field                | type  | Description                                            |
 | -------------------- | ----- | ------------------------------------------------------ |
@@ -648,7 +649,7 @@ bool encode(uint8_t* data, int bufferSize, int& size, PanTiltParamsMask* mask = 
 | data       | Pointer to data buffer. Buffer size must be >= 48 bytes.     |
 | bufferSize | Data buffer size. Buffer size must be >= 48 bytes.           |
 | size       | Size of encoded data.                                        |
-| mask       | Parameters mask - pointer to **PanTiltParamsMask** structure. **PanTiltParamsMask** (declared in PanTilt.h file) determines flags for each field (parameter) declared in [PanTiltParams class](#PanTiltParams-class-description). If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **PanTiltParamsMask** structure. |
+| mask       | Parameters mask - pointer to **PanTiltParamsMask** structure. **PanTiltParamsMask** (declared in PanTilt.h file) determines flags for each field (parameter) declared in [PanTiltParams class](#pantiltparams-class-description). If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **PanTiltParamsMask** structure. |
 
 **Returns:** TRUE if params encoded (serialized) or FALSE if not.
 
@@ -708,7 +709,7 @@ params1.encode(buffer, bufferSize, size, &mask);
 
 ## Deserialize PanTilt params
 
-[PanTiltParams](#PanTiltParams-class-description) class provides method **decode(...)** to deserialize params. Deserialization of PanTilt params is necessary in case when it is needed to receive params via communication channels. Method automatically recognizes which parameters were serialized by **encode(...)** method. Method declaration:
+[PanTiltParams](#pantiltparams-class-description) class provides method **decode(...)** to deserialize params. Deserialization of PanTilt params is necessary in case when it is needed to receive params via communication channels. Method automatically recognizes which parameters were serialized by **encode(...)** method. Method declaration:
 
 ```cpp
 bool decode(uint8_t* data, int dataSize);
@@ -899,7 +900,7 @@ Done!
 
 # How to make custom implementation
 
-The **PanTilt** class provides only an interface, data structures, and methods for encoding and decoding commands and params. To create your own implementation of the pan-tilt controller, PanTilt repository has to be included in your project (see [**Build and connect to your project**](#Build-and-connect-to-your-project) section). The catalogue **example** (see [**Library files**](#Library-files) section) includes an example of the design of the custom pan-tilt controller. All the methods of the PanTilt interface class have to be included. Custom PanTilt class declaration:
+The **PanTilt** class provides only an interface, data structures, and methods for encoding and decoding commands and params. To create your own implementation of the pan-tilt controller, PanTilt repository has to be included in your project (see [**Build and connect to your project**](#build-and-connect-to-your-project) section). The catalogue **example** (see [**Library files**](#library-files) section) includes an example of the design of the custom pan-tilt controller. All the methods of the PanTilt interface class have to be included. Custom PanTilt class declaration:
 
 ```c++
 class CustomPanTilt : public PanTilt
