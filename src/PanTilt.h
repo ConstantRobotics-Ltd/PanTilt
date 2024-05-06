@@ -259,7 +259,7 @@ public:
      * @param arg1 The argument value used by the command.
      * @param arg2 The argument value used by the command.
      */
-    static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
+    static void encodeCommand(uint8_t* data, int& size,
                        PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f);
 
     /**
