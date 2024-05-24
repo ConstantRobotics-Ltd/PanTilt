@@ -1,10 +1,10 @@
-![logo](_static/pantilt_web_logo.png)
+![pantilt_web_logo](./static/pantilt_web_logo.png)
 
 
 
 # **PanTilt C++ library**
 
-**v1.0.1**
+**v1.0.2**
 
 
 
@@ -15,7 +15,7 @@
 - [Library files](#library-files)
 - [PanTilt interface class description](#pantilt-interface-class-description)
   - [Class declaration](#class-declaration)
-  - [getVersion method](#geversion-method)
+  - [getVersion method](#getversion-method)
   - [openPanTilt method](#openpantilt-method)
   - [initPanTilt method](#initpantilt-method)
   - [closePanTilt method](#closepantilt-method)
@@ -44,7 +44,7 @@
 
 # Overview
 
-**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode/decode commands and encode/decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum), [PanTiltParam enum](#pantiltparam-enum) and **PanTiltParams** class) and **PanTilt** class declaration. **PanTilt** interface depends on **[ConfigReader](https://github.com/ConstantRobotics-Ltd/ConfigReader)** library to provide methods to read/write JSON config files.
+**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode / decode commands and encode / decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum), [PanTiltParam enum](#pantiltparam-enum) and **PanTiltParams** class) and **PanTilt** class declaration. **PanTilt** interface depends on [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library (provides methods to read / write JSON config files, source code included, Apache 2.0 license). It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
 
 
 
@@ -56,30 +56,31 @@
 | ------- | ------------ | --------------------------------------------- |
 | 1.0.0   | 06.02.2024   | - First version of PanTilt interface library. |
 | 1.0.1   | 23.04.2024   | - Documentation updated for website.          |
+| 1.0.2   | 24.05.2024   | - Documentation updated.                      |
 
 
 
 # Library files
 
-The **PanTilt** is a CMake project. Library files:
+The library supplied by source code only. The user would be given a set of files in the form of a CMake project (repository). The repository structure is shown below:
 
 ```xml
 CMakeLists.txt ----------------- Main CMake file of the library.
 3rdparty ----------------------- Folder with third-party libraries.
     CMakeLists.txt ------------- CMake file to include third-party libraries.
-    ConfigReader --------------- Source code of the ConfigReader library.
+    ConfigReader --------------- Folder with ConfigReader library source code.
 test --------------------------- Folder for internal tests of library.
     CMakeLists.txt ------------- CMake file for tests application.
     main.cpp ------------------- Source code file of test application.
 src ---------------------------- Folder with source code of the library.
     CMakeLists.txt ------------- CMake file of the library.
-    PanTilt.cpp ---------------- Source code file of the library.
+    PanTilt.cpp ---------------- C++ implementation file.
     PanTilt.h ------------------ Header file which includes PanTilt class declaration.
     PanTiltVersion.h ----------- Header file which includes version of the library.
     PanTiltVersion.h.in -------- CMake service file to generate version file.
 example ------------------------ Folder with source code of the custom PanTilt implementation.
     CMakeLists.txt ------------- CMake file of the library.
-    CustomPanTilt.cpp ---------- Source code file of the custom PanTilt implementation.
+    CustomPanTilt.cpp ---------- C++ implementation file.
     CustomPanTilt.h ------------ Header file which includes custom PanTilt class declaration.
     CustomPanTiltVersion.h ----- Header file which includes version of the library.
     CustomPanTiltVersion.h.in -- CMake service file to generate version file.
@@ -159,7 +160,7 @@ public:
 
 ## getVersion method
 
-**getVersion()** method returns string of current class version. Method declaration:
+The **getVersion()** method returns string of current class version. Method declaration:
 
 ```cpp
 static std::string getVersion();
@@ -174,14 +175,14 @@ std::cout << "PanTilt version: " << cr::pantilt::PanTilt::getVersion();
 Console output:
 
 ```bash
-PanTilt class version: 1.0.1
+PanTilt class version: 1.0.2
 ```
 
 
 
 ## openPanTilt method
 
-**openPanTilt(...)** method opens pan-tilt controller. This method can be used instead of **initPanTilt (...)** method. Method declaration:
+The **openPanTilt(...)** method opens pan-tilt controller. This method can be used instead of **initPanTilt (...)** method. Method declaration:
 
 ```cpp
 virtual bool openPanTilt(std::string initString) = 0;
@@ -197,7 +198,7 @@ virtual bool openPanTilt(std::string initString) = 0;
 
 ## initPanTilt method
 
-**initPanTilt(...)** method initializes pan-tilt controller with the list of parameters. This method can be used instead of **openPanTilt(...)** method (**PanTiltParams** class includes **initString**) when pan-tilt controller initialization should be launched with desired parameters. Method declaration:
+The **initPanTilt(...)** method initializes pan-tilt controller with the list of parameters. This method can be used instead of **openPanTilt(...)** method (**PanTiltParams** class includes **initString**) when pan-tilt controller initialization should be launched with desired parameters. Method declaration:
 
 ```cpp
 virtual bool initPanTilt(PanTiltParams& params) = 0;
@@ -213,7 +214,7 @@ virtual bool initPanTilt(PanTiltParams& params) = 0;
 
 ## closePanTilt method
 
-**initPanTilt(...)** method designed to close connection to pan-tilt. Method declaration:
+The **initPanTilt(...)** method designed to close connection to pan-tilt. Method declaration:
 
 ```cpp
 virtual void closePanTilt() = 0;
@@ -223,7 +224,7 @@ virtual void closePanTilt() = 0;
 
 ## isPanTiltInitialized method
 
-**isPanTiltInitialized(...)** method returns camera initialization status. This status shows if the camera controller was initialized but doesn't show, if camera controller has communication with pan-tilt equipment. For example, if pan-tilt has serial port and camera controller connected to serial port (opens serial port file in OS) but camera may be not active (no power). In this case `is Initialized` status just shows that pan-tilt controller has opened serial port. Method declaration:
+The **isPanTiltInitialized(...)** method returns camera initialization status. This status shows if the camera controller was initialized but doesn't show, if camera controller has communication with pan-tilt equipment. For example, if pan-tilt has serial port and camera controller connected to serial port (opens serial port file in OS) but camera may be not active (no power). In this case `is Initialized` status just shows that pan-tilt controller has opened serial port. Method declaration:
 
 ```cpp
 virtual bool isPanTiltInitialized() = 0;
@@ -235,7 +236,7 @@ virtual bool isPanTiltInitialized() = 0;
 
 ## isPanTiltConnected method
 
-**isPanTiltConnected(...)** is a method designed to ascertain the connection status of the pan-tilt system. This status indicates whether the pan-tilt controller is actively communicating with the pan-tilt equipment. For instance, if the pan-tilt unit is physically connected to the controller via a serial port (with the port open in the operating system), but the unit itself is inactive due to a lack of power, the method will return FALSE, signifying no data exchange. Conversely, if the pan-tilt system is successfully communicating with the camera equipment, the method will return TRUE. It's important to note that if the camera controller is not initialized, the connection status will always be FALSE. Method declaration:
+The **isPanTiltConnected(...)** is a method designed to ascertain the connection status of the pan-tilt system. This status indicates whether the pan-tilt controller is actively communicating with the pan-tilt equipment. For instance, if the pan-tilt unit is physically connected to the controller via a serial port (with the port open in the operating system), but the unit itself is inactive due to a lack of power, the method will return FALSE, signifying no data exchange. Conversely, if the pan-tilt system is successfully communicating with the camera equipment, the method will return TRUE. It's important to note that if the camera controller is not initialized, the connection status will always be FALSE. Method declaration:
 
 ```cpp
 virtual bool isPanTiltConnected() = 0;
@@ -252,7 +253,7 @@ virtual bool isPanTiltConnected() = 0;
 
 ## setParam method
 
-**setParam (...)** method sets new parameters value. **PanTilt** based library should provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
+The **setParam (...)** method sets new parameters value. **PanTilt** based library should provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual bool setParam(PanTiltParam id, float value) = 0;
@@ -269,7 +270,7 @@ virtual bool setParam(PanTiltParam id, float value) = 0;
 
 ## getParam method
 
-**getParam(...)** method returns parameter value. **PanTilt** based library should provide thread-safe **getParam(...)** method call. This means that the **getParam(...)** method can be safely called from any thread. Method declaration:
+The **getParam(...)** method returns parameter value. **PanTilt** based library should provide thread-safe **getParam(...)** method call. This means that the **getParam(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual float getParam(PanTiltParam id) = 0;
@@ -285,7 +286,7 @@ virtual float getParam(PanTiltParam id) = 0;
 
 ## getParams method
 
-**getParams(...)** method is designed to obtain params structure. **PanTilt** based library should provide thread-safe **getParams(...)** method call. This means that the **getParams(...)** method can be safely called from any thread. Method declaration:
+The **getParams(...)** method is designed to obtain params structure. **PanTilt** based library should provide thread-safe **getParams(...)** method call. This means that the **getParams(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual void getParams(PanTiltParams& params) = 0;
@@ -299,7 +300,7 @@ virtual void getParams(PanTiltParams& params) = 0;
 
 ## executeCommand method
 
-**executeCommand(...)** method executes library command. **PanTilt** based library should provide thread-safe **executeCommand(...)** method call. This means that the **executeCommand(...)** method can be safely called from any thread. Method declaration:
+The **executeCommand(...)** method executes library command. **PanTilt** based library should provide thread-safe **executeCommand(...)** method call. This means that the **executeCommand(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f) = 0;
@@ -315,7 +316,7 @@ virtual bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0
 
 ## encodeSetParamCommand method
 
-**encodeSetParamCommand(...)** static method encodes command to change any PanTilt parameter value. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeSetParamCommand(...)** designed to encode SET_PARAM command. Method declaration:
+The **encodeSetParamCommand(...)** static method encodes command to change any PanTilt parameter value. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeSetParamCommand(...)** designed to encode SET_PARAM command. Method declaration:
 
 ```cpp
 static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id, float value);
@@ -327,22 +328,6 @@ static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id, flo
 | size      | Size of encoded data. Will be 11 bytes.                      |
 | id        | Parameter ID according to [**PanTilt enum**](#pantilt-enum). |
 | value     | Parameter value.                                             |
-
-**SET_PARAM** command format:
-
-| Byte | Value | Description                                        |
-| ---- | ----- | -------------------------------------------------- |
-| 0    | 0x01  | SET_PARAM command header value.                    |
-| 1    | Major | Major version of PanTilt class.                    |
-| 2    | Minor | Minor version of PanTilt class.                    |
-| 3    | id    | Parameter ID **int32_t** in Little-endian format.  |
-| 4    | id    | Parameter ID **int32_t** in Little-endian format.  |
-| 5    | id    | Parameter ID **int32_t** in Little-endian format.  |
-| 6    | id    | Parameter ID **int32_t** in Little-endian format.  |
-| 7    | value | Parameter value **float** in Little-endian format. |
-| 8    | value | Parameter value **float** in Little-endian format. |
-| 9    | value | Parameter value **float** in Little-endian format. |
-| 10   | value | Parameter value **float** in Little-endian format. |
 
 **encodeSetParamCommand(...)** is static and used without **PanTilt** class instance. This method used on client side (control system). Command encoding example:
 
@@ -361,7 +346,7 @@ PanTilt::encodeSetParamCommand(data, size, PanTiltParam::PAN_ANGLE, outValue);
 
 ## encodeCommand method
 
-**encodeCommand(...)** static method encodes command for PanTilt remote control. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeCommand(...)** designed to encode COMMAND command (action command). Method declaration:
+The **encodeCommand(...)** static method encodes command for PanTilt remote control. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeCommand(...)** designed to encode COMMAND command (action command). Method declaration:
 
 ```cpp
 static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
@@ -372,30 +357,9 @@ static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to data buffer for encoded command. Must have size >= 15. |
 | size      | Size of encoded data. Will be 15 bytes.                      |
-| id        | Command ID according to [**PanTiltCommand enum**](#pantiltcommand-enum). |
+| id        | Command ID according to [PanTiltCommand](#pantiltcommand-enum) enum. |
 | arg1      | Command argument 1 value (value depends on command ID).      |
 | arg2      | Command argument 2 value (value depends on command ID).      |
-
-**COMMAND** format:
-
-| Byte | Value | Description                                               |
-| ---- | ----- | --------------------------------------------------------- |
-| 0    | 0x00  | COMMAND header value.                                     |
-| 1    | Major | Major version of PanTilt class.                           |
-| 2    | Minor | Minor version of PanTilt class.                           |
-| 3    | id    | Command ID **int32_t** in Little-endian format.           |
-| 4    | id    | Command ID **int32_t** in Little-endian format.           |
-| 5    | id    | Command ID **int32_t** in Little-endian format.           |
-| 6    | id    | Command ID **int32_t** in Little-endian format.           |
-| 7    | arg1  | Command argument value **float** in Little-endian format. |
-| 8    | arg1  | Command argument value **float** in Little-endian format. |
-| 9    | arg1  | Command argument value **float** in Little-endian format. |
-| 10   | arg1  | Command argument value **float** in Little-endian format. |
-| 11   | arg2  | Command argument value **float** in Little-endian format. |
-| 12   | arg2  | Command argument value **float** in Little-endian format. |
-| 13   | arg2  | Command argument value **float** in Little-endian format. |
-| 14   | arg2  | Command argument value **float** in Little-endian format. |
-
 
 **encodeCommand(...)** is static and used without **PanTilt** class instance. This method used on client side (control system). Command encoding example:
 
@@ -412,7 +376,7 @@ PanTilt::encodeCommand(data, size, PanTilt::GO_TO_PAN_ANGLE);
 
 ## decodeCommand method
 
-**decodeCommand(...)** static method decodes command on pan-tilt device controller side. Method declaration:
+The **decodeCommand(...)** static method decodes command on pan-tilt device controller side. Method declaration:
 
 ```cpp
 static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId, PanTiltCommand& commandId, float& value);
@@ -422,8 +386,8 @@ static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId, PanTilt
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to input command.                                    |
 | size      | Size of command. Must be 11 bytes for SET_PARAM and 7 bytes for COMMAND. |
-| paramId   | PanTilt parameter ID according to [**PanTiltParam enum**](#pantiltparam-enum). After decoding SET_PARAM command the method will return parameter ID. |
-| commandId | PanTilt command ID according to [**PanTiltCommand enum**](#pantiltcommand-enum). After decoding COMMAND the method will return command ID. |
+| paramId   | PanTilt parameter ID according to [PanTiltParam](#pantiltparam-enum) enum. After decoding SET_PARAM command the method will return parameter ID. |
+| commandId | PanTilt command ID according to [PanTiltCommand](#pantiltcommand-enum) enum. After decoding COMMAND the method will return command ID. |
 | value     | PanTilt parameter value (after decoding SET_PARAM command).  |
 
 **Returns:** **0** - in case decoding COMMAND, **1** - in case decoding SET_PARAM command or **-1** in case errors.
@@ -432,7 +396,7 @@ static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId, PanTilt
 
 ## decodeAndExecuteCommand method
 
-**decodeAndExecuteCommand(...)** method decodes and executes command on pan-tilt device controller side. The particular implementation of the PanTilt controller must provide thread-safe **decodeAndExecuteCommand(...)** method call. This means that the **decodeAndExecuteCommand(...)** method can be safely called from any thread. Method declaration:
+The **decodeAndExecuteCommand(...)** method decodes and executes command on pan-tilt device controller side. The particular implementation of the PanTilt controller must provide thread-safe **decodeAndExecuteCommand(...)** method call. This means that the **decodeAndExecuteCommand(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
@@ -638,7 +602,7 @@ public:
 
 ## Serialize PanTilt params
 
-[PanTiltParams](#PanTiltParams-class-description) class provides method **encode(...)** to serialize PanTilt params. Serialization of PanTilt params is necessary in case when PanTilt params have to be sent via communication channels. Method provides options to exclude particular parameters from serialization. To do this method inserts binary mask (1 byte) where each bit represents particular parameter and **decode(...)** method recognizes it. Method declaration:
+[PanTiltParams](#pantiltparams-class-description) class provides method **encode(...)** to serialize PanTilt params. Serialization of PanTilt params is necessary in case when PanTilt params have to be sent via communication channels. Method provides options to exclude particular parameters from serialization. To do this method inserts binary mask (1 byte) where each bit represents particular parameter and **decode(...)** method recognizes it. Method declaration:
 
 ```cpp
 bool encode(uint8_t* data, int bufferSize, int& size, PanTiltParamsMask* mask = nullptr);
@@ -649,7 +613,7 @@ bool encode(uint8_t* data, int bufferSize, int& size, PanTiltParamsMask* mask = 
 | data       | Pointer to data buffer. Buffer size must be >= 48 bytes.     |
 | bufferSize | Data buffer size. Buffer size must be >= 48 bytes.           |
 | size       | Size of encoded data.                                        |
-| mask       | Parameters mask - pointer to **PanTiltParamsMask** structure. **PanTiltParamsMask** (declared in PanTilt.h file) determines flags for each field (parameter) declared in [PanTiltParams class](#pantiltparams-class-description). If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **PanTiltParamsMask** structure. |
+| mask       | Parameters mask - pointer to **PanTiltParamsMask** structure. **PanTiltParamsMask** (declared in PanTilt.h file) determines flags for each field (parameter) declared in [PanTiltParams](#pantiltparams-class-description) class. If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **PanTiltParamsMask** structure. |
 
 **Returns:** TRUE if params encoded (serialized) or FALSE if not.
 
@@ -744,7 +708,7 @@ params2.decode(buffer, size);
 
 ## Read params from JSON file and write to JSON file
 
-**PanTilt** depends on open source [**ConfigReader**](https://github.com/ConstantRobotics-Ltd/ConfigReader) library which provides method to read params from JSON file and to write params to JSON file. Example of writing and reading params to JSON file:
+**PanTilt** depends on open source [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library which provides method to read params from JSON file and to write params to JSON file. Example of writing and reading params to JSON file:
 
 ```cpp
 // Write params to file.
@@ -900,7 +864,7 @@ Done!
 
 # How to make custom implementation
 
-The **PanTilt** class provides only an interface, data structures, and methods for encoding and decoding commands and params. To create your own implementation of the pan-tilt controller, PanTilt repository has to be included in your project (see [**Build and connect to your project**](#build-and-connect-to-your-project) section). The catalogue **example** (see [**Library files**](#library-files) section) includes an example of the design of the custom pan-tilt controller. All the methods of the PanTilt interface class have to be included. Custom PanTilt class declaration:
+The **PanTilt** class provides only an interface, data structures, and methods for encoding and decoding commands and params. To create your own implementation of the pan-tilt controller, PanTilt repository has to be included in your project (see [Build and connect to your project](#build-and-connect-to-your-project) section). The catalogue **example** (see [Library files](#library-files) section) includes an example of the design of the custom pan-tilt controller. All the methods of the PanTilt interface class have to be included. Custom PanTilt class declaration:
 
 ```c++
 class CustomPanTilt : public PanTilt
@@ -956,4 +920,3 @@ private:
     std::mutex m_paramsMutex;
 };
 ```
-
