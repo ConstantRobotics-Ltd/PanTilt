@@ -357,7 +357,7 @@ int cr::pantilt::PanTilt::decodeCommand(uint8_t* data, int size, PanTiltParam& p
 	}
 
 	// Check version.
-	if (data[1] != PAN_TILT_MAJOR_VERSION || data[2] != PAN_TILT_MAJOR_VERSION)
+	if (data[1] != PAN_TILT_MAJOR_VERSION || data[2] != PAN_TILT_MINOR_VERSION)
 	{
 		return -1;
 	}

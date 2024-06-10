@@ -57,6 +57,7 @@
 | 1.0.0   | 06.02.2024   | - First version of PanTilt interface library. |
 | 1.0.1   | 23.04.2024   | - Documentation updated for website.          |
 | 1.0.2   | 24.05.2024   | - Documentation updated.                      |
+| 1.0.3   | 10.06.2024   | - Fix version error in decodeCommand method.  |
 
 
 
