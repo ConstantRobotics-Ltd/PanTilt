@@ -26,7 +26,7 @@ std::string cr::pantilt::CustomPanTilt::getVersion()
 bool cr::pantilt::CustomPanTilt::openPanTilt(std::string initString)
 {
 	// Set connection flags.
-	m_params.isInitialized = true;
+	m_params.isOpen = true;
 	m_params.isConnected = true;
 
 	return true;
@@ -40,7 +40,7 @@ bool cr::pantilt::CustomPanTilt::initPanTilt(PanTiltParams& params)
 	m_params = params;
 
 	// Set connection flags.
-	m_params.isInitialized = true;
+	m_params.isOpen = true;
 	m_params.isConnected = true;
 
 	return true;
@@ -51,14 +51,14 @@ bool cr::pantilt::CustomPanTilt::initPanTilt(PanTiltParams& params)
 void cr::pantilt::CustomPanTilt::closePanTilt()
 {
 	m_params.isConnected = false;
-	m_params.isInitialized = false;
+	m_params.isOpen = false;
 }
 
 
 
 bool cr::pantilt::CustomPanTilt::isPanTiltOpen()
 {
-	return m_params.isInitialized;
+	return m_params.isOpen;
 }
 
 
@@ -137,16 +137,6 @@ bool cr::pantilt::CustomPanTilt::setParam(PanTiltParam id, float value)
 		m_params.tiltMotorSpeed = value;
 		return true;
 	}
-	case PanTiltParam::IS_CONNECTED:
-	{
-		// Read only.
-		return false;
-	}
-	case PanTiltParam::IS_INITIALIZED:
-	{
-		// Read only.
-		return false;
-	}
 	case PanTiltParam::CUSTOM_1:
 	{
 		// Custom parameter.
@@ -204,9 +194,9 @@ float cr::pantilt::CustomPanTilt::getParam(PanTiltParam id)
 	{
 		return m_params.isConnected ? 1.0f : 0.0f;
 	}
-	case PanTiltParam::IS_INITIALIZED:
+	case PanTiltParam::IS_OPEN:
 	{
-		return m_params.isInitialized ? 1.0f : 0.0f;
+		return m_params.isOpen ? 1.0f : 0.0f;
 	}
 	case PanTiltParam::CUSTOM_1:
 	{
@@ -293,23 +283,15 @@ bool cr::pantilt::CustomPanTilt::decodeAndExecuteCommand(uint8_t* data, int size
 	// Decode command.
 	PanTiltCommand commandId = PanTiltCommand::GO_TO_PAN_POSITION;
 	PanTiltParam paramId = PanTiltParam::PAN_MOTOR_POSITION;
-	float value = 0.0f;
-	switch (PanTilt::decodeCommand(data, size, paramId, commandId, value))
+	float value1 = 0.0f;
+    float value2 = 0.0f;
+	switch (PanTilt::decodeCommand(data, size, paramId, commandId, value1, value2))
 	{
-		// COMMAND.
-	case 0:
-		// Execute command.
-		return executeCommand(commandId);
-		// SET_PARAM.
-	case 1:
-	{
-		// Set param.
-		return setParam(paramId, value);
-	}
-	default:
-	{
-		return false;
-	}
+	// COMMAND.
+	case 0: return executeCommand(commandId, value1, value2);
+	// SET_PARAM.
+	case 1: return setParam(paramId, value1);
+	default: return false;
 	}
 
 	return false;

@@ -18,6 +18,11 @@ bool encodeDecodeTestWithoutMask();
  */
 bool encodeDecodeTestWithMask();
 
+/**
+ * @brief Read / write JSON test.
+ */
+bool readWriteJson();
+
 
 
 int main(void)
@@ -57,6 +62,17 @@ int main(void)
 	}
 	std::cout << std::endl;
 
+    std::cout << "Read / write JSON test:" << std::endl;
+	if (readWriteJson())
+	{
+		std::cout << "OK" << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR" << std::endl;
+	}
+	std::cout << std::endl;
+
 	return 1;
 }
 
@@ -73,10 +89,11 @@ bool copyParametersTest()
 	params1.panMotorSpeed = static_cast<float>(rand() % 255);
 	params1.tiltMotorSpeed = static_cast<float>(rand() % 255);
 	params1.isConnected = true;
-	params1.isInitialized = true;
+	params1.isOpen = true;
 	params1.custom1 = static_cast<float>(rand() % 255);
 	params1.custom2 = static_cast<float>(rand() % 255);
 	params1.custom3 = static_cast<float>(rand() % 255);
+    params1.initString = "Init string";
 
 	// Copy params.
 	cr::pantilt::PanTiltParams params2 = params1;
@@ -118,9 +135,9 @@ bool copyParametersTest()
 		std::cout << "[" << __LINE__ << "] " << "isConnected not equal" << std::endl;
 		result = false;
 	}
-	if (params1.isInitialized != params2.isInitialized)
+	if (params1.isOpen != params2.isOpen)
 	{
-		std::cout << "[" << __LINE__ << "] " << "isInitialized not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "isOpen not equal" << std::endl;
 		result = false;
 	}
 	if (params1.custom1 != params2.custom1)
@@ -136,6 +153,11 @@ bool copyParametersTest()
 	if (params1.custom3 != params2.custom3)
 	{
 		std::cout << "[" << __LINE__ << "] " << "custom3 not equal" << std::endl;
+		result = false;
+	}
+    if (params1.initString != params2.initString)
+	{
+		std::cout << "[" << __LINE__ << "] " << "initString not equal" << std::endl;
 		result = false;
 	}
 
@@ -155,7 +177,7 @@ bool encodeDecodeTestWithoutMask()
 	params1.panMotorSpeed = static_cast<float>(rand() % 255);
 	params1.tiltMotorSpeed = static_cast<float>(rand() % 255);
 	params1.isConnected = true;
-	params1.isInitialized = true;
+	params1.isOpen = true;
 	params1.custom1 = static_cast<float>(rand() % 255);
 	params1.custom2 = static_cast<float>(rand() % 255);
 	params1.custom3 = static_cast<float>(rand() % 255);
@@ -169,6 +191,7 @@ bool encodeDecodeTestWithoutMask()
 		std::cout << "[" << __LINE__ << "] " << "Can't encode params" << std::endl;
 		return false;
 	}
+    std::cout << "Encoded " << size << " bytes" << std::endl;
 
 	// Decode (deserialize) params.
 	cr::pantilt::PanTiltParams params2;
@@ -215,9 +238,9 @@ bool encodeDecodeTestWithoutMask()
 		std::cout << "[" << __LINE__ << "] " << "isConnected not equal" << std::endl;
 		result = false;
 	}
-	if (params1.isInitialized != params2.isInitialized)
+	if (params1.isOpen != params2.isOpen)
 	{
-		std::cout << "[" << __LINE__ << "] " << "isInitialized not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "isOpen not equal" << std::endl;
 		result = false;
 	}
 	if (params1.custom1 != params2.custom1)
@@ -236,7 +259,6 @@ bool encodeDecodeTestWithoutMask()
 		result = false;
 	}
 
-
 	return result;
 }
 
@@ -253,7 +275,7 @@ bool encodeDecodeTestWithMask()
 	params1.panMotorSpeed = static_cast<float>(rand() % 255);
 	params1.tiltMotorSpeed = static_cast<float>(rand() % 255);
 	params1.isConnected = true;
-	params1.isInitialized = true;
+	params1.isOpen = true;
 	params1.custom1 = static_cast<float>(rand() % 255);
 	params1.custom2 = static_cast<float>(rand() % 255);
 	params1.custom3 = static_cast<float>(rand() % 255);
@@ -267,7 +289,7 @@ bool encodeDecodeTestWithMask()
 	mask.panMotorSpeed = false;
 	mask.tiltMotorSpeed = true;
 	mask.isConnected = false;
-	mask.isInitialized = true;
+	mask.isOpen = true;
 	mask.custom1 = false;
 	mask.custom2 = true;
 	mask.custom3 = false;
@@ -327,9 +349,9 @@ bool encodeDecodeTestWithMask()
 		std::cout << "[" << __LINE__ << "] " << "isConnected not equal" << std::endl;
 		result = false;
 	}
-	if (params2.isInitialized != params1.isInitialized)
+	if (params2.isOpen != params1.isOpen)
 	{
-		std::cout << "[" << __LINE__ << "] " << "isInitialized not equal" << std::endl;
+		std::cout << "[" << __LINE__ << "] " << "isOpen not equal" << std::endl;
 		result = false;
 	}
 	if (params2.custom1 != 0.0f)
@@ -345,6 +367,80 @@ bool encodeDecodeTestWithMask()
 	if (params2.custom3 != 0.0f)
 	{
 		std::cout << "[" << __LINE__ << "] " << "custom3 not equal" << std::endl;
+		result = false;
+	}
+
+	return result;
+}
+
+
+
+bool readWriteJson()
+{
+    // Prepare random params.
+	cr::pantilt::PanTiltParams params1;
+	params1.panAngle = static_cast<float>(rand() % 255);
+	params1.tiltAngle = static_cast<float>(rand() % 255);
+	params1.panMotorPosition = rand() % 65535;
+	params1.tiltMotorPosition = rand() % 65535;
+	params1.panMotorSpeed = static_cast<float>(rand() % 255);
+	params1.tiltMotorSpeed = static_cast<float>(rand() % 255);
+	params1.isConnected = true;
+	params1.isOpen = true;
+	params1.custom1 = static_cast<float>(rand() % 255);
+	params1.custom2 = static_cast<float>(rand() % 255);
+	params1.custom3 = static_cast<float>(rand() % 255);
+    params1.initString = "Init string";
+
+    cr::utils::ConfigReader inConfig;
+    inConfig.set(params1, "panTiltParams");
+    inConfig.writeToFile("PanTiltParams.json");
+
+    // Read params from file.
+    cr::utils::ConfigReader outConfig;
+    if(!outConfig.readFromFile("PanTiltParams.json"))
+    {
+        std::cout << "Can't open config file" << std::endl;
+        return false;
+    }
+
+    cr::pantilt::PanTiltParams params2;
+    if(!outConfig.get(params2, "panTiltParams"))
+    {
+        std::cout << "Can't read params from file" << std::endl;
+        return false;
+    }
+
+	// Compare params.
+	bool result = true;
+	if (params1.panMotorSpeed != params2.panMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "panMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params1.tiltMotorSpeed != params2.tiltMotorSpeed)
+	{
+		std::cout << "[" << __LINE__ << "] " << "tiltMotorSpeed not equal" << std::endl;
+		result = false;
+	}
+	if (params1.custom1 != params2.custom1)
+	{
+		std::cout << "[" << __LINE__ << "] " << "custom1 not equal" << std::endl;
+		result = false;
+	}
+	if (params1.custom2 != params2.custom2)
+	{
+		std::cout << "[" << __LINE__ << "] " << "custom2 not equal" << std::endl;
+		result = false;
+	}
+	if (params1.custom3 != params2.custom3)
+	{
+		std::cout << "[" << __LINE__ << "] " << "custom3 not equal" << std::endl;
+		result = false;
+	}
+    if (params1.initString != params2.initString)
+	{
+		std::cout << "[" << __LINE__ << "] " << "initString not equal" << std::endl;
 		result = false;
 	}
 

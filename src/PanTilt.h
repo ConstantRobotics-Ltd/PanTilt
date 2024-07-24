@@ -20,7 +20,7 @@ struct PanTiltParamsMask
     bool panMotorSpeed{ true };
     bool tiltMotorSpeed{ true };
     bool isConnected{ true };
-    bool isInitialized{ true };
+    bool isOpen{ true };
     bool custom1{ true };
     bool custom2{ true };
     bool custom3{ true };
@@ -47,8 +47,8 @@ public:
     float tiltMotorSpeed{ 0.0f };
     /// Status defining if the pan-tilt device is connected.
     bool isConnected{ false };
-	/// Status defining if the pan-tilt device is initialized.
-    bool isInitialized{ false };
+	/// Status defining if the pan-tilt device is initialized (open).
+    bool isOpen{ false };
     /// Init string. Format depends on target controller.
     std::string initString{ "" };
     /// PanTilt custom parameter. Value depends on particular pan-tilt
@@ -65,9 +65,8 @@ public:
     float custom3{ 0.0f };
 
     /// Macro from ConfigReader to make params readable/writable from JSON.
-    JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
-        tiltAngle, panMotorSpeed, tiltMotorSpeed, isConnected, isInitialized,
-        initString, custom1, custom2, custom3)
+    JSON_READABLE(PanTiltParams, panMotorSpeed, tiltMotorSpeed, initString,
+                  custom1, custom2, custom3)
 
     /// operator =
     PanTiltParams& operator= (const PanTiltParams& src);
@@ -116,13 +115,13 @@ enum class PanTiltParam
     TILT_MOTOR_SPEED,
     /// Status defining if the pan-tilt device is connected.
     IS_CONNECTED,
-    /// Status defining if the pan-tilt device is initialized.
-    IS_INITIALIZED,
-    /// Camera custom param. Value depends on implementation.
+    /// Status defining if the pan-tilt device is initialized (open).
+    IS_OPEN,
+    /// Custom param. Value depends on implementation.
     CUSTOM_1,
-    /// Camera custom param. Value depends on implementation.
+    /// Custom param. Value depends on implementation.
     CUSTOM_2,
-    /// Camera custom param. Value depends on implementation.
+    /// Custom param. Value depends on implementation.
     CUSTOM_3
 };
 
@@ -239,22 +238,22 @@ public:
      * @return TRUE if the command was executed successfully, FALSE otherwise.
      */
     virtual bool executeCommand(PanTiltCommand id,
-                                      float arg1 = 0.0f, float arg2 = 0.0f) = 0;
+                                float arg1 = 0.0f, float arg2 = 0.0f) = 0;
 
     /**
      * @brief Encode set param command.
      * @param data Pointer to data buffer. Must have size >= 11.
-     * @param size Size of encoded data.
+     * @param size Size of encoded command. Will be 11 bytes.
      * @param id PanTilt parameter id.
      * @param value PanTilt parameter value.
      */
-    static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id,
-                                                                   float value);
+    static void encodeSetParamCommand(uint8_t* data, int& size,
+                                     PanTiltParam id, float value);
 
     /**
      * @brief Encode command.
      * @param data Pointer to data buffer. Must have size >= 15.
-     * @param size Size of encoded data.
+     * @param size Size of encoded command. Will be 15 bytes.
      * @param id PanTilt command ID.
      * @param arg1 The argument value used by the command.
      * @param arg2 The argument value used by the command.
@@ -268,14 +267,15 @@ public:
      * @param size Size of data.
      * @param paramId Output command ID.
      * @param commandId Output command ID.
-     * @param value Param or command value.
+     * @param value1 Parameter value or command first argument value.
+     * @param value2 Parameter value or command first argument value.
      * @return 0 - command decoded, 1 - set param command decoded, -1 - error.
      */
     static int decodeCommand(uint8_t* data,
         int size,
         PanTiltParam& paramId,
         PanTiltCommand& commandId,
-        float& value);
+        float& value1, float& value2);
 
     /**
      * @brief Decode and execute command.

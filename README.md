@@ -4,7 +4,7 @@
 
 # **PanTilt C++ library**
 
-**v1.0.2**
+**v1.1.0**
 
 
 
@@ -14,12 +14,12 @@
 - [Versions](#versions)
 - [Library files](#library-files)
 - [PanTilt interface class description](#pantilt-interface-class-description)
-  - [Class declaration](#class-declaration)
+  - [PanTilt interface class declaration](#pantilt-interface-class-declaration)
   - [getVersion method](#getversion-method)
   - [openPanTilt method](#openpantilt-method)
   - [initPanTilt method](#initpantilt-method)
   - [closePanTilt method](#closepantilt-method)
-  - [isPanTiltInitialized method](#ispantiltinitialized-method)
+  - [isPanTiltOpen method](#ispantiltopen-method)
   - [isPanTiltConnected method](#ispantiltconnected-method)
   - [setParam method](#setparam-method)
   - [getParam method](#getparam-method)
@@ -33,7 +33,7 @@
   - [PanTiltCommand enum](#pantiltcommand-enum)
   - [PanTiltParam enum](#pantiltparam-enum)
 - [PanTiltParams class description](#pantiltparams-class-description)
-  - [Class declaration](#class-declaration)
+  - [PanTiltParams class declaration](#pantiltparams-class-declaration)
   - [Serialize PanTilt params](#serialize-pantilt-params)
   - [Deserialize PanTilt params](#deserialize-pantilt-params)
   - [Read params from JSON file and write to JSON file](#read-params-from-json-file-and-write-to-json-file)
@@ -44,7 +44,7 @@
 
 # Overview
 
-**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. The library provides methods to encode / decode commands and encode / decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum), [PanTiltParam enum](#pantiltparam-enum) and **PanTiltParams** class) and **PanTilt** class declaration. **PanTilt** interface depends on [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library (provides methods to read / write JSON config files, source code included, Apache 2.0 license). It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
+**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. Also it provides methods to encode / decode commands and encode / decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum) (defines action commands IDs), [PanTiltParam enum](#pantiltparam-enum) (defines parameters IDs), [PanTiltParams](#pantiltparams-class-declaration) class) and [PanTilt](#pantilt-interface-class-declaration) class declaration. **PanTilt** interface depends on [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library (provides methods to read / write JSON config files, source code included, Apache 2.0 license). It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
 
 
 
@@ -58,6 +58,7 @@
 | 1.0.1   | 23.04.2024   | - Documentation updated for website.          |
 | 1.0.2   | 24.05.2024   | - Documentation updated.                      |
 | 1.0.3   | 10.06.2024   | - Fix version error in decodeCommand method.  |
+| 1.1.0   | 24.07.2024   | - Interface changed.<br />- CMake updated.<br />- Mistakes in documentation fixed. |
 
 
 
@@ -93,68 +94,70 @@ example ------------------------ Folder with source code of the custom PanTilt i
 
 
 
-## Class declaration
+## PanTilt interface class declaration
 
 **PanTilt** interface class declared in **PanTilt.h** file. Class declaration:
 
 ```cpp
+namespace cr
+{
+namespace pantilt
+{
 class PanTilt
 {
 public:
-   
-    /// Class virtual destructor.
+
+    /// Class destructor.
     virtual ~PanTilt();
 
     /// Get the version of the PanTilt class.
     static std::string getVersion();
-    
+
     /// Open pan-tilt device.
     virtual bool openPanTilt(std::string initString) = 0;
 
-    /// Init pan-tilt device with parameters structure.
+    /// Init pan-tilt device by set of parameters.
     virtual bool initPanTilt(PanTiltParams& params) = 0;
 
-	/// Close pan-tilt controller connection.
+    /// Close pan-tilt controller connection.
     virtual void closePanTilt() = 0;
 
-	/// Get pan-tilt controller is initialized status.
-    virtual bool isPanTiltInitialized() = 0;
-    
- 	/// Get pan-tilt controller is connected status.
+    /// Get pan-tilt controller open status.
+    virtual bool isPanTiltOpen() = 0;
+
+    /// Get pan-tilt controller is connected status.
     virtual bool isPanTiltConnected() = 0;
-    
-	/// Set the value for a specific library parameter.
+
+    /// Set the value for a specific library parameter.
     virtual bool setParam(PanTiltParam id, float value) = 0;
 
-	/// Get the value of a specific library parameter.
+    /// Get the value of a specific library parameter.
     virtual float getParam(PanTiltParam id) = 0;
 
-	/// Get the structure containing all library parameters.
+    /// Get the structure containing all library parameters.
     virtual void getParams(PanTiltParams& params) = 0;
 
-	/// Execute a PanTilt command.
-    virtual bool executeCommand(
-            PanTiltCommand id, float arg1 = 0.0f,
-            float arg2 = 0.0f) = 0;
+    /// Execute a PanTilt command.
+    virtual bool executeCommand(PanTiltCommand id,
+                                float arg1 = 0.0f, float arg2 = 0.0f) = 0;
 
-	/// Encode set param command.
-    static void encodeSetParamCommand(
-            uint8_t* data, int& size,
-            PanTiltParam id, float value);
+    /// Encode set param command.
+    static void encodeSetParamCommand(uint8_t* data, int& size,
+                                      PanTiltParam id, float value);
 
-	/// Encode command.
-	static void cr::pantilt::PanTilt::encodeCommand(
-            uint8_t* data, int& size, PanTiltCommand id,
-            float arg1 = 0.0f, float arg2 = 0.0f);
+    /// Encode command.
+    static void encodeCommand(uint8_t* data, int& size, PanTiltCommand id,
+                              float arg1 = 0.0f, float arg2 = 0.0f);
 
-	/// Decode command.
-    static int decodeCommand(
-            uint8_t* data, int size, PanTiltParam& paramId,
-            PanTiltCommand& commandId, float& value);
+    /// Decode command.
+    static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId,
+                    PanTiltCommand& commandId, float& value1, float& value2);
 
-	/// Decode and execute command.
+    /// Decode and execute command.
     virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 };
+}
+}
 ```
 
 
@@ -176,14 +179,14 @@ std::cout << "PanTilt version: " << cr::pantilt::PanTilt::getVersion();
 Console output:
 
 ```bash
-PanTilt class version: 1.0.2
+PanTilt class version: 1.1.0
 ```
 
 
 
 ## openPanTilt method
 
-The **openPanTilt(...)** method opens pan-tilt controller. This method can be used instead of **initPanTilt (...)** method. Method declaration:
+The **openPanTilt(...)** method opens (initializes) pan-tilt controller. This method can be used instead of [initPanTilt(...)](#initpantilt-method) method. All parameters will be initialized by default. Method declaration:
 
 ```cpp
 virtual bool openPanTilt(std::string initString) = 0;
@@ -193,13 +196,13 @@ virtual bool openPanTilt(std::string initString) = 0;
 | ---------- | ------------------------------------------------------------ |
 | initString | Initialization string. Particular pan-tilt controller can have unique initialization string format. Initialization string parts have to be divided with  '**;**' symbol. Recommended pan-tilt controller initialization string for controllers which use serial port: **"/dev/ttyUSB0;9600;100"** ("/dev/ttyUSB0" - serial port name, "9600" - baudrate, "100" - serial port read timeout). |
 
-**Returns:** TRUE if the camera pan-tilt initialized or FALSE if not.
+**Returns:** TRUE if the pan-tilt initialized or FALSE if not.
 
 
 
 ## initPanTilt method
 
-The **initPanTilt(...)** method initializes pan-tilt controller with the list of parameters. This method can be used instead of **openPanTilt(...)** method (**PanTiltParams** class includes **initString**) when pan-tilt controller initialization should be launched with desired parameters. Method declaration:
+The **initPanTilt(...)** method initializes pan-tilt controller by set of parameters. This method can be used instead of [openPanTilt(...)](#openpantilt-method) method ([PanTiltParams](#pantiltparams-class-declaration) class includes **initString**) when pan-tilt controller initialization should be launched with desired parameters. Method declaration:
 
 ```cpp
 virtual bool initPanTilt(PanTiltParams& params) = 0;
@@ -207,9 +210,9 @@ virtual bool initPanTilt(PanTiltParams& params) = 0;
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| params    | Parameters (**PanTiltParams** class). PanTiltParams class includes initString wich used in **openPanTilt(...)** method. See description of **PanTiltParams** class. |
+| params    | [PanTiltParams](#pantiltparams-class-declaration) class object which includes all parameters. [PanTiltParams](#pantiltparams-class-declaration) class includes initString which used in [openPanTilt(...)](#openpantilt-method) method. |
 
-**Returns:** TRUE if the pan-tilt controller initialized or FALSE if not.
+**Returns:** TRUE if the pan-tilt controller is initialized or FALSE if not.
 
 
 
@@ -223,38 +226,33 @@ virtual void closePanTilt() = 0;
 
 
 
-## isPanTiltInitialized method
+## isPanTiltOpen method
 
-The **isPanTiltInitialized(...)** method returns camera initialization status. This status shows if the camera controller was initialized but doesn't show, if camera controller has communication with pan-tilt equipment. For example, if pan-tilt has serial port and camera controller connected to serial port (opens serial port file in OS) but camera may be not active (no power). In this case `is Initialized` status just shows that pan-tilt controller has opened serial port. Method declaration:
+The **isPanTiltOpen(...)** method returns initialization status. This status shows if the controller was initialized but doesn't show, if controller has communication with pan-tilt equipment. For example, if pan-tilt unit has serial port and the  controller connected to serial port (opens serial port file in OS) but equipment may be not active (no power). In this case **isPanTiltOpen(...)** (returns TRUE) status just shows that the controller has opened serial port. Method declaration:
 
 ```cpp
-virtual bool isPanTiltInitialized() = 0;
+virtual bool isPanTiltOpen() = 0;
 ```
 
-**Returns:** TRUE if the pan-tilt controller initialized or FALSE if not.
+**Returns:** TRUE if the pan-tilt controller is initialized or FALSE if not.
 
 
 
 ## isPanTiltConnected method
 
-The **isPanTiltConnected(...)** is a method designed to ascertain the connection status of the pan-tilt system. This status indicates whether the pan-tilt controller is actively communicating with the pan-tilt equipment. For instance, if the pan-tilt unit is physically connected to the controller via a serial port (with the port open in the operating system), but the unit itself is inactive due to a lack of power, the method will return FALSE, signifying no data exchange. Conversely, if the pan-tilt system is successfully communicating with the camera equipment, the method will return TRUE. It's important to note that if the camera controller is not initialized, the connection status will always be FALSE. Method declaration:
+The **isPanTiltConnected(...)** is a method designed to ascertain the connection status of the pan-tilt system. This status indicates whether the pan-tilt controller is actively communicating with the pan-tilt equipment. For example, if the pan-tilt unit is physically connected to the controller via a serial port (with the port open in the operating system), but the equipment itself is inactive due to a lack of power, the method will return FALSE, signifying no data exchange. Conversely, if the pan-tilt system is successfully communicating with the equipment, the method will return TRUE. It's important to note that if the pan-tilt controller is not initialized, the connection status will always be FALSE. Method declaration:
 
 ```cpp
 virtual bool isPanTiltConnected() = 0;
 ```
 
-| Parameter | Description                                                  |
-| --------- | ------------------------------------------------------------ |
-| id        | Parameter ID according to [PanTiltParam](#pantiltparam-enum) enum. |
-| value     | Parameter value. Value depends on parameter ID.              |
-
-**Returns:** TRUE if the pan-tilt controller has data exchange with camera equipment or FALSE if not.
+**Returns:** TRUE if the pan-tilt controller has data exchange with equipment or FALSE if not.
 
 
 
 ## setParam method
 
-The **setParam (...)** method sets new parameters value. **PanTilt** based library should provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
+The **setParam(...)** method sets new parameters value. **PanTilt** based library should provide thread-safe **setParam(...)** method call. This means that the **setParam(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual bool setParam(PanTiltParam id, float value) = 0;
@@ -287,7 +285,7 @@ virtual float getParam(PanTiltParam id) = 0;
 
 ## getParams method
 
-The **getParams(...)** method is designed to obtain params structure. **PanTilt** based library should provide thread-safe **getParams(...)** method call. This means that the **getParams(...)** method can be safely called from any thread. Method declaration:
+The **getParams(...)** method is designed to obtain all pant-tilt parameters. **PanTilt** based library should provide thread-safe **getParams(...)** method call. This means that the **getParams(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual void getParams(PanTiltParams& params) = 0;
@@ -301,7 +299,7 @@ virtual void getParams(PanTiltParams& params) = 0;
 
 ## executeCommand method
 
-The **executeCommand(...)** method executes library command. **PanTilt** based library should provide thread-safe **executeCommand(...)** method call. This means that the **executeCommand(...)** method can be safely called from any thread. Method declaration:
+The **executeCommand(...)** method executes action command. **PanTilt** based library should provide thread-safe **executeCommand(...)** method call. This means that the **executeCommand(...)** method can be safely called from any thread. Method declaration:
 
 ```cpp
 virtual bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f) = 0;
@@ -309,15 +307,17 @@ virtual bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| id        | Command  ID according to [PanTiltCommand](#pantiltcommand-enum) enum. |
+| id        | Command ID according to [PanTiltCommand](#pantiltcommand-enum) enum. |
+| arg1      | First command argument. Value depends on command ID.         |
+| arg2      | Second command argument. Value depends on command ID.        |
 
-**Returns:** TRUE if the command executed or FALSE if not.
+**Returns:** TRUE if the command is executed or FALSE if not.
 
 
 
 ## encodeSetParamCommand method
 
-The **encodeSetParamCommand(...)** static method encodes command to change any PanTilt parameter value. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeSetParamCommand(...)** designed to encode SET_PARAM command. Method declaration:
+The **encodeSetParamCommand(...)** static method encodes command to change any remote PanTilt parameter. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeSetParamCommand(...)** designed to encode SET_PARAM command. Method declaration:
 
 ```cpp
 static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id, float value);
@@ -327,8 +327,8 @@ static void encodeSetParamCommand(uint8_t* data, int& size, PanTiltParam id, flo
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to data buffer for encoded command. Must have size >= 11. |
 | size      | Size of encoded data. Will be 11 bytes.                      |
-| id        | Parameter ID according to [**PanTilt enum**](#pantilt-enum). |
-| value     | Parameter value.                                             |
+| id        | Parameter ID according to [PanTiltParam](#pantiltparam-enum) enum. |
+| value     | Parameter value. Valued depends on parameter ID.             |
 
 **encodeSetParamCommand(...)** is static and used without **PanTilt** class instance. This method used on client side (control system). Command encoding example:
 
@@ -350,8 +350,7 @@ PanTilt::encodeSetParamCommand(data, size, PanTiltParam::PAN_ANGLE, outValue);
 The **encodeCommand(...)** static method encodes command for PanTilt remote control. To control a pan-tilt device remotely, the developer has to design his own protocol and according to it encode the command and deliver it over the communication channel. To simplify this, the **PanTilt** class contains static methods for encoding the control command. The **PanTilt** class provides two types of commands: a parameter change command (SET_PARAM) and an action command (COMMAND). **encodeCommand(...)** designed to encode COMMAND command (action command). Method declaration:
 
 ```cpp
-static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
-                       PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f);
+static void encodeCommand(uint8_t* data, int& size, PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f);
 ```
 
 | Parameter | Description                                                  |
@@ -359,8 +358,8 @@ static void cr::pantilt::PanTilt::encodeCommand(uint8_t* data, int& size,
 | data      | Pointer to data buffer for encoded command. Must have size >= 15. |
 | size      | Size of encoded data. Will be 15 bytes.                      |
 | id        | Command ID according to [PanTiltCommand](#pantiltcommand-enum) enum. |
-| arg1      | Command argument 1 value (value depends on command ID).      |
-| arg2      | Command argument 2 value (value depends on command ID).      |
+| arg1      | First command argument. Value depends on command ID.         |
+| arg2      | Second command argument. Value depends on command ID.        |
 
 **encodeCommand(...)** is static and used without **PanTilt** class instance. This method used on client side (control system). Command encoding example:
 
@@ -370,7 +369,7 @@ uint8_t data[7];
 // Size of encoded data.
 int size = 0;
 // Encode command.
-PanTilt::encodeCommand(data, size, PanTilt::GO_TO_PAN_ANGLE);
+PanTilt::encodeCommand(data, size, PanTilt::GO_TO_PAN_ANGLE, 10, 10);
 ```
 
 
@@ -380,16 +379,17 @@ PanTilt::encodeCommand(data, size, PanTilt::GO_TO_PAN_ANGLE);
 The **decodeCommand(...)** static method decodes command on pan-tilt device controller side. Method declaration:
 
 ```cpp
-static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId, PanTiltCommand& commandId, float& value);
+static int decodeCommand(uint8_t* data, int size, PanTiltParam& paramId, PanTiltCommand& commandId, float& value1, float& value2);
 ```
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to input command.                                    |
-| size      | Size of command. Must be 11 bytes for SET_PARAM and 7 bytes for COMMAND. |
+| size      | Size of command. Must be 11 bytes for SET_PARAM and 15 bytes for COMMAND. |
 | paramId   | PanTilt parameter ID according to [PanTiltParam](#pantiltparam-enum) enum. After decoding SET_PARAM command the method will return parameter ID. |
 | commandId | PanTilt command ID according to [PanTiltCommand](#pantiltcommand-enum) enum. After decoding COMMAND the method will return command ID. |
-| value     | PanTilt parameter value (after decoding SET_PARAM command).  |
+| value1    | PanTilt parameter value (after decoding SET_PARAM command) or first command argument (after decoding COMMAND). |
+| value1    | Second command argument (after decoding COMMAND).            |
 
 **Returns:** **0** - in case decoding COMMAND, **1** - in case decoding SET_PARAM command or **-1** in case errors.
 
@@ -406,7 +406,7 @@ virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
 | data      | Pointer to input command.                                    |
-| size      | Size of command. Must be 11 bytes for SET_PARAM or 7 bytes for COMMAND. |
+| size      | Size of command. Must be 11 bytes for SET_PARAM or 15 bytes for COMMAND. |
 
 **Returns:** TRUE if command decoded (SET_PARAM or COMMAND) and executed (action command or set param command).
 
@@ -421,6 +421,10 @@ virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 Enum declaration:
 
 ```cpp
+namespace cr
+{
+namespace pantilt
+{
 enum class PanTiltCommand
 {
     /// Restart Pan-Tilt device.
@@ -451,6 +455,8 @@ enum class PanTiltCommand
     /// negative is counterclockwise. First argument is pan speed, second is tilt speed.
 	MOVE_PAN_TILT
 };
+}
+}
 ```
 
 **Table 2** - Commands description.
@@ -458,17 +464,17 @@ enum class PanTiltCommand
 | Command                 | Description                                                  |
 | ----------------------- | ------------------------------------------------------------ |
 | RESTART                 | Restart pan-tilt device.                                     |
-| STOP                    | Stop Pan-Tilt device, block all running commands and left device in current state. |
+| STOP                    | Stop movement, block all running commands and left device in current state. |
 | GO_TO_PAN_POSITION      | Go to given pan motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
 | GO_TO_TILT_POSITION     | Go to given tilt motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
 | GO_TO_PAN_TILT_POSITION | Go to given pan and tilt motor position. Valid values from 0 to 65535 (MAX_UINT_16). |
 | GO_TO_PAN_ANGLE         | Go to given pan angle. Valid values from -180.0° to 180.0°.  |
 | GO_TO_TILT_ANGLE        | Go to given tilt angle. Valid values from -180.0° to 180.0°. |
 | GO_TO_PAN_TILT_ANGLE    | Go to given pan and tilt angle. Valid values from -180.0° to 180.0°. |
-| MOVE_PAN    | Move pan with set velocity given as an argument. |
-| MOVE_TILT    | Move tilt with set velocity given as an argument. |
-| MOVE_PAN_TILT    | Move pan with set velocity given as first argument and tilt with second. |
 | GO_TO_HOME              | Go to home position.                                         |
+| MOVE_PAN                | Move pan with set velocity given as an argument.             |
+| MOVE_TILT               | Move tilt with set velocity given as an argument.            |
+| MOVE_PAN_TILT           | Move pan with set velocity given as first argument and tilt with second. |
 
 
 
@@ -477,6 +483,10 @@ enum class PanTiltCommand
 Enum declaration:
 
 ```cpp
+namespace cr
+{
+namespace pantilt
+{
 enum class PanTiltParam
 {
     /// Pan motor position for encoder. Range: 0 - 65535.
@@ -495,15 +505,17 @@ enum class PanTiltParam
     TILT_MOTOR_SPEED,
     /// Status defining if the pan-tilt device is connected.
     IS_CONNECTED,
-    /// Status defining if the pan-tilt device is initialized.
-    IS_INITIALIZED, 
-    /// Camera custom param. Value depends on implementation.
+    /// Status defining if the pan-tilt device is initialized (open).
+    IS_OPEN,
+    /// Custom param. Value depends on implementation.
     CUSTOM_1,
-    /// Camera custom param. Value depends on implementation.
+    /// Custom param. Value depends on implementation.
     CUSTOM_2,
-    /// Camera custom param. Value depends on implementation.
+    /// Custom param. Value depends on implementation.
     CUSTOM_3
 };
+}
+}
 ```
 
 **Table 3** - Params description.
@@ -514,10 +526,13 @@ enum class PanTiltParam
 | TILT_MOTOR_POSITION | read / write | Tilt motor position for encoder. Range: 0 to 65535.          |
 | PAN_ANGLE           | read / write | Pan angle. Range: -180.0 to 180.0.                           |
 | TILT_ANGLE          | read / write | Tilt angle. Range: -180.0 - 180.0.                           |
-| PAN_MOTOR_SPEED     | read / write | Pan motor speed. Positive speed is clockwise, negative is counterclockwise. |
-| TILT_MOTOR_SPEED    | read / write | Tilt motor speed. Positive speed is clockwise, negative is counterclockwise. |
+| PAN_MOTOR_SPEED     | read / write | Pan motor speed. Positive speed is clockwise, negative is counterclockwise, degree / sec. |
+| TILT_MOTOR_SPEED    | read / write | Tilt motor speed. Positive speed is clockwise, negative is counterclockwise, degree / sec. |
 | IS_CONNECTED        | read only    | Connection status (read only): 1 - pan-tilt control port connected, 0 - not connected. |
-| IS_INITIALIZED      | read only    | Initialization status (read only): 1 - pan-tilt control port initialized, 0 - not initialized. |
+| IS_OPEN             | read only    | Initialization status (read only): 1 - pan-tilt control initialized (open), 0 - not initialized (not open). |
+| CUSTOM1             | read / write | Custom parameter. Depends on tan-til controller implementation. |
+| CUSTOM2             | read / write | Custom parameter. Depends on tan-til controller implementation. |
+| CUSTOM3             | read / write | Custom parameter. Depends on tan-til controller implementation. |
 
 
 
@@ -525,14 +540,19 @@ enum class PanTiltParam
 
 
 
-## Class declaration
+## PanTiltParams class declaration
 
-**PanTiltParams** class is used to provide pan-tilt parameters structure. Also **PanTiltParams** provides possibility to write/read params from JSON files (**JSON_READABLE** macro) and provides methods to encode and decode params. **PanTiltParams** interface class declared in **PanTilt.h** file. Class declaration:
+**PanTiltParams** class contains all pan-tilt parameters. Also **PanTiltParams** provides possibility to write / read params from JSON files (**JSON_READABLE** macro) and provides methods to encode and decode params. **PanTiltParams** interface class declared in **PanTilt.h** file. Class declaration:
 
 ```cpp
+namespace cr
+{
+namespace pantilt
+{
 class PanTiltParams
 {
 public:
+
     /// Pan motor position for encoder. Range: 0 - 65535.
     int panMotorPosition{ 0 };
     /// Tilt motor position for encoder. Range: 0 - 65535.
@@ -547,8 +567,8 @@ public:
     float tiltMotorSpeed{ 0.0f };
     /// Status defining if the pan-tilt device is connected.
     bool isConnected{ false };
-	/// Status defining if the pan-tilt device is initialized.
-    bool isInitialized{ false };
+	/// Status defining if the pan-tilt device is initialized (open).
+    bool isOpen{ false };
     /// Init string. Format depends on target controller.
     std::string initString{ "" };
     /// PanTilt custom parameter. Value depends on particular pan-tilt
@@ -565,45 +585,47 @@ public:
     float custom3{ 0.0f };
 
     /// Macro from ConfigReader to make params readable/writable from JSON.
-    JSON_READABLE(PanTiltParams, panMotorPosition, tiltMotorPosition, panAngle,
-        tiltAngle, panMotorSpeed, tiltMotorSpeed, isConnected, isInitialized,
-        initString, custom1, custom2, custom3)
+    JSON_READABLE(PanTiltParams, panMotorSpeed, tiltMotorSpeed,
+                  initString, custom1, custom2, custom3)
 
     /// operator =
-        PanTiltParams& operator= (const PanTiltParams& src);
+    PanTiltParams& operator= (const PanTiltParams& src);
 
-    // Encode (serialize) params.
+    /// Encode (serialize) params.
     bool encode(uint8_t* data, int bufferSize, int& size,
                                              PanTiltParamsMask* mask = nullptr);
-	// Decode (deserialize) params.
+
+    /// Decode (deserialize) params.
     bool decode(uint8_t* data, int dataSize);
 };
+}
+}
 ```
 
 **Table 4** - **PanTiltParams** class fields description is related to [PanTiltParam enum](#pantiltparam-enum) description.
 
-| Field                | type  | Description                                            |
-| -------------------- | ----- | ------------------------------------------------------ |
-| panMotorPosition     | int   | Pan motor position for encoder. Range: 0 - 65535.      |
-| tiltMotorPosition    | int   | Tilt motor position for encoder. Range: 0 - 65535.     |
-| panAngle             | float | Pan angle. Range: -180.0 - 180.0.                      |
-| tiltAngle            | float | Tilt angle. Range: -90.0 - 90.0.                       |
-| panMotorSpeed        | float | Pan motor speed. Range: 0.0 - 100.0.                   |
-| tiltMotorSpeed       | float | Tilt motor speed. Range: 0.0 - 100.0.                  |
-| isConnected    | bool | Status defining if the pan-tilt device is connected.              |
-| isInitialized | bool | Status defining if the pan-tilt device is initialized. |
-| initString         | std::string | Init string. Format depends on target controller.                 |
-| custom1         | float | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
-| custom2 | float | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
-| custom3 | float | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
+| Field             | type   | Description                                            |
+| ----------------- | ------ | ------------------------------------------------------ |
+| panMotorPosition  | int    | Pan motor position for encoder. Range: 0 to 65535.     |
+| tiltMotorPosition | int    | Tilt motor position for encoder. Range: 0 to 65535.    |
+| panAngle          | float  | Pan angle. Range: -180.0 to 180.0.                     |
+| tiltAngle         | float  | Tilt angle. Range: -180.0 - 180.0.                     |
+| panMotorSpeed     | float  | Pan motor speed. Positive speed is clockwise, negative is counterclockwise, degree / sec. |
+| tiltMotorSpeed    | float  | Tilt motor speed. Positive speed is clockwise, negative is counterclockwise, degree / sec. |
+| isConnected       | bool   | Connection status (read only): 1 - pan-tilt control port connected, 0 - not connected. |
+| isOpen            | bool   | Initialization status (read only): 1 - pan-tilt control initialized (open), 0 - not initialized (not open). |
+| initString        | string | Initialization string. Format depends on target controller and equivalent as for [openPanTilt(...)](#openpantilt-method) method. |
+| custom1           | float  | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
+| custom2           | float  | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
+| custom3           | float  | PanTilt custom parameter. Value depends on particular pan-tilt controller. Custom parameters used when particular pan-tilt equipment has specific unusual parameter. |
 
-**None:** *PanTiltParams class fields listed in Table 4 **have to** reflect params set/get by methods setParam(...) and getParam(...).* 
+**None:** *PanTiltParams class fields listed in Table 4 **have to** reflect params set / get by methods setParam(...) and getParam(...).* 
 
 
 
 ## Serialize PanTilt params
 
-[PanTiltParams](#pantiltparams-class-description) class provides method **encode(...)** to serialize PanTilt params. Serialization of PanTilt params is necessary in case when PanTilt params have to be sent via communication channels. Method provides options to exclude particular parameters from serialization. To do this method inserts binary mask (1 byte) where each bit represents particular parameter and **decode(...)** method recognizes it. Method declaration:
+[PanTiltParams](#pantiltparams-class-description) class provides method **encode(...)** to serialize PanTilt params. Serialization of PanTilt params is necessary in case when PanTilt params have to be sent via communication channels. Method provides options to exclude particular parameters from serialization. To do this method inserts binary mask (2 bytes) where each bit represents particular parameter and **decode(...)** method recognizes it. The method doesn't encode **initString**. Method declaration:
 
 ```cpp
 bool encode(uint8_t* data, int bufferSize, int& size, PanTiltParamsMask* mask = nullptr);
@@ -611,10 +633,10 @@ bool encode(uint8_t* data, int bufferSize, int& size, PanTiltParamsMask* mask = 
 
 | Parameter  | Value                                                        |
 | ---------- | ------------------------------------------------------------ |
-| data       | Pointer to data buffer. Buffer size must be >= 48 bytes.     |
-| bufferSize | Data buffer size. Buffer size must be >= 48 bytes.           |
+| data       | Pointer to data buffer. Buffer size must be >= 43 bytes.     |
+| bufferSize | Data buffer size. Buffer size must be >= 43 bytes.           |
 | size       | Size of encoded data.                                        |
-| mask       | Parameters mask - pointer to **PanTiltParamsMask** structure. **PanTiltParamsMask** (declared in PanTilt.h file) determines flags for each field (parameter) declared in [PanTiltParams](#pantiltparams-class-description) class. If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **PanTiltParamsMask** structure. |
+| mask       | Parameters mask - pointer to **PanTiltParamsMask** structure. **PanTiltParamsMask** (declared in **PanTilt.h** file) determines flags for each field (parameter) declared in [PanTiltParams](#pantiltparams-class-description) class. If the user wants to exclude any parameters from serialization, he can put a pointer to the mask. If the user wants to exclude a particular parameter from serialization, he should set the corresponding flag in the **PanTiltParamsMask** structure. |
 
 **Returns:** TRUE if params encoded (serialized) or FALSE if not.
 
@@ -630,7 +652,7 @@ struct PanTiltParamsMask
     bool panMotorSpeed{ true };
     bool tiltMotorSpeed{ true };
     bool isConnected{ true };
-    bool isInitialized{ true };
+    bool isOpen{ true };
     bool custom1{ true };
     bool custom2{ true };
     bool custom3{ true };
@@ -683,7 +705,7 @@ bool decode(uint8_t* data, int dataSize);
 | Parameter | Value                                          |
 | --------- | ---------------------------------------------- |
 | data      | Pointer to data buffer with serialized params. |
-| dataSize  | Size of command data.                          |
+| dataSize  | Size of serialized data.                       |
 
 **Returns:** TRUE if params decoded (deserialized) or FALSE if not.
 
@@ -709,43 +731,43 @@ params2.decode(buffer, size);
 
 ## Read params from JSON file and write to JSON file
 
-**PanTilt** depends on open source [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library which provides method to read params from JSON file and to write params to JSON file. Example of writing and reading params to JSON file:
+**PanTilt** depends on open source [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library which provides method to read params from JSON file and to write params to JSON file (**JSON_READABLE** macro defines only few parameters to read / write from JSON). Example of writing and reading params to JSON file:
 
 ```cpp
-// Write params to file.
 cr::utils::ConfigReader inConfig;
-cr::pantilt::PanTiltParams in;
-inConfig.set(in, "panTiltParams");
+inConfig.set(params1, "panTiltParams");
 inConfig.writeToFile("PanTiltParams.json");
 
-// Read params from file.
+
 cr::utils::ConfigReader outConfig;
 if(!outConfig.readFromFile("PanTiltParams.json"))
 {
-    cout << "Can't open config file" << endl;
+    std::cout << "Can't open config file" << std::endl;
+    return false;
+}
+
+cr::pantilt::PanTiltParams params2;
+if(!outConfig.get(params2, "panTiltParams"))
+{
+    std::cout << "Can't read params from file" << std::endl;
     return false;
 }
 ```
 
-**PanTiltParams.json** will look like:
+**PanTiltParams.json** will look like (JSON includes not all parameters):
 
 ```json
 {
-    "panTiltParams":
-    {
-        "panMotorPosition": 43565,
-        "tiltMotorPosition": 10500,
-        "panAngle": 30.5f,
-        "tiltAngle": 89.9f,
-        "panMotorSpeed": 50.0f,
-        "tiltMotorSpeed": 100.0f,
-        "isConnected": true,
-        "isInitialized": true,
-        "custom1": 0.7f,
-        "custom2": 12.0f,
-        "custom3": 0.61f
+    "panTiltParams": {
+        "custom1": 153.0,
+        "custom2": 74.0,
+        "custom3": 237.0,
+        "initString": "Init string",
+        "panMotorSpeed": 117.0,
+        "tiltMotorSpeed": 27.0
     }
 }
+
 ```
 
 
@@ -755,9 +777,7 @@ if(!outConfig.readFromFile("PanTiltParams.json"))
 Typical commands to build **PanTilt**:
 
 ```bash
-git clone https://github.com/ConstantRobotics-Ltd/PanTilt.git
 cd PanTilt
-git submodule update --init --recursive
 mkdir build
 cd build
 cmake ..
@@ -774,15 +794,7 @@ src
     yourLib.cpp
 ```
 
-You can add repository **PanTilt** as submodule by commands:
-
-```bash
-cd <your respository folder>
-git submodule add https://github.com/ConstantRobotics-Ltd/PanTilt.git 3rdparty/PanTilt
-git submodule update --init --recursive
-```
-
-In your repository folder will be created folder **3rdparty/PanTilt** which contains files of **PanTilt** repository with subrepository **ConfigReader** and **ConfigReader**. New structure of your repository:
+Create **3rdparty** folder in your repository and copy **PanTilt** repository folder there. New structure of your repository:
 
 ```bash
 CMakeLists.txt
@@ -834,7 +846,7 @@ if (${PARENT}_SUBMODULE_PAN_TILT)
 endif()
 ```
 
-File **3rdparty/CMakeLists.txt** adds folder **PanTilt** to your project and excludes test application and example (PanTilt class test application and example of custom **PanTilt** class implementation) from compiling. Your repository new structure will be:
+File **3rdparty/CMakeLists.txt** adds folder **PanTilt** to your project and excludes test application and example (PanTilt class test application and example of custom **PanTilt** class implementation) from compiling (by default example and test application excluded from compiling if **PanTilt** included as sub-repository). Your repository new structure will be:
 
 ```bash
 CMakeLists.txt
@@ -868,6 +880,9 @@ Done!
 The **PanTilt** class provides only an interface, data structures, and methods for encoding and decoding commands and params. To create your own implementation of the pan-tilt controller, PanTilt repository has to be included in your project (see [Build and connect to your project](#build-and-connect-to-your-project) section). The catalogue **example** (see [Library files](#library-files) section) includes an example of the design of the custom pan-tilt controller. All the methods of the PanTilt interface class have to be included. Custom PanTilt class declaration:
 
 ```c++
+namespace cr::pantilt
+{
+/// Custom pan-tilt device controller class.
 class CustomPanTilt : public PanTilt
 {
 public:
@@ -880,44 +895,36 @@ public:
 
     /// Get the version of the PanTilt class.
     static std::string getVersion();
-    
+
     /// Open pan-tilt device.
-    virtual bool openPanTilt(std::string initString);
+    bool openPanTilt(std::string initString) override;
 
     /// Init pan-tilt device with parameters structure.
-    virtual bool initPanTilt(PanTiltParams& params);
+    bool initPanTilt(PanTiltParams& params) override;
 
-	/// Close pan-tilt controller connection.
-    virtual void closePanTilt();
+    /// Close pan-tilt controller connection.
+    void closePanTilt() override;
 
-	/// Get pan-tilt controller is initialized status.
-    virtual bool isPanTiltInitialized();
-    
- 	/// Get pan-tilt controller is connected status.
-    virtual bool isPanTiltConnected();
-    
-	/// Set the value for a specific library parameter.
-    virtual bool setParam(PanTiltParam id, float value);
+    /// Get pan-tilt controller is opened status.
+    bool isPanTiltOpen() override;
 
-	/// Get the value of a specific library parameter.
-    virtual float getParam(PanTiltParam id);
+    /// Get pan-tilt controller is connected status.
+    bool isPanTiltConnected() override;
 
-	/// Get the structure containing all library parameters.
-    virtual void getParams(PanTiltParams& params);
+    /// Set the value for a specific library parameter.
+    bool setParam(PanTiltParam id, float value) override;
 
-	/// Execute a PanTilt command.
-    bool executeCommand(
-            PanTiltCommand id, float arg1 = 0.0f,
-            float arg2 = 0.0f);
+    /// Get the value of a specific library parameter.
+    float getParam(PanTiltParam id) override;
 
-	/// Decode and execute command.
-    bool decodeAndExecuteCommand(uint8_t* data, int size);
+    /// Get the structure containing all library parameters.
+    void getParams(PanTiltParams& params) override;
 
-private:
+    /// Execute a PanTilt command.
+    bool executeCommand(PanTiltCommand id, float arg1 = 0.0f, float arg2 = 0.0f) override;
 
-    /// Parameters structure (default params).
-    PanTiltParams m_params;
-    /// Mutex for parameters access.
-    std::mutex m_paramsMutex;
+    ///  Decode and execute command.
+    bool decodeAndExecuteCommand(uint8_t* data, int size) override;
 };
+}
 ```
