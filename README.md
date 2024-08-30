@@ -44,7 +44,7 @@
 
 # Overview
 
-**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. Also it provides methods to encode / decode commands and encode / decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum) (defines action commands IDs), [PanTiltParam enum](#pantiltparam-enum) (defines parameters IDs), [PanTiltParams](#pantiltparams-class-declaration) class) and [PanTilt](#pantilt-interface-class-declaration) class declaration. **PanTilt** interface depends on [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library (provides methods to read / write JSON config files, source code included, Apache 2.0 license). It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
+**PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. Also it provides methods to encode / decode commands and encode / decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum) (defines action commands IDs), [PanTiltParam enum](#pantiltparam-enum) (defines parameters IDs), [PanTiltParams](#pantiltparams-class-declaration) class) and [PanTilt](#pantilt-interface-class-declaration) class declaration. **PanTilt** interface depends on [ConfigReader](https://rapidpixel.constantrobotics.com/docs/Service/ConfigReader.html) library (provides methods to read / write JSON config files, source code included, Apache 2.0 license). It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
 
 
 
@@ -731,7 +731,7 @@ params2.decode(buffer, size);
 
 ## Read params from JSON file and write to JSON file
 
-**PanTilt** depends on open source [ConfigReader](https://rapidpixel.constantrobotics.com/docs/service-libraries/config-reader.html) library which provides method to read params from JSON file and to write params to JSON file (**JSON_READABLE** macro defines only few parameters to read / write from JSON). Example of writing and reading params to JSON file:
+**PanTilt** depends on open source [ConfigReader](https://rapidpixel.constantrobotics.com/docs/Service/ConfigReader.html) library which provides method to read params from JSON file and to write params to JSON file (**JSON_READABLE** macro defines only few parameters to read / write from JSON). Example of writing and reading params to JSON file:
 
 ```cpp
 cr::utils::ConfigReader inConfig;
