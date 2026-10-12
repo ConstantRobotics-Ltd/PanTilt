@@ -4,7 +4,7 @@
 
 # **PanTilt C++ library**
 
-**v1.1.1**
+**v1.1.2**
 
 
 
@@ -60,6 +60,7 @@
 | 1.0.3   | 10.06.2024   | - Fix version error in decodeCommand method.  |
 | 1.1.0   | 24.07.2024   | - Interface changed.<br />- CMake updated.<br />- Mistakes in documentation fixed. |
 | 1.1.1   | 03.09.2024   | - Documentation updated.<br /> |
+| 1.1.2   | 12.10.2026   | - Submodules updated.                         |
 
 
 
@@ -180,7 +181,7 @@ std::cout << "PanTilt version: " << cr::pantilt::PanTilt::getVersion();
 Console output:
 
 ```bash
-PanTilt class version: 1.1.1
+PanTilt class version: 1.1.2
 ```
 
 
