@@ -103,9 +103,7 @@ example ------------------------ Folder with source code of the custom PanTilt i
 **PanTilt** interface class declared in **PanTilt.h** file. Class declaration:
 
 ```cpp
-namespace cr
-{
-namespace pantilt
+namespace rapidpixel
 {
 class PanTilt
 {
@@ -178,7 +176,6 @@ protected:
     PanTilt& operator= (PanTilt&& src) = default;
 };
 }
-}
 ```
 
 
@@ -194,7 +191,7 @@ static std::string getVersion();
 Method can be used without **PanTilt** class instance:
 
 ```cpp
-std::cout << "PanTilt version: " << cr::pantilt::PanTilt::getVersion() << std::endl;
+std::cout << "PanTilt version: " << rapidpixel::PanTilt::getVersion() << std::endl;
 ```
 
 Console output:
@@ -361,8 +358,8 @@ int size = 0;
 // Parameter value.
 float outValue = 10.0f;
 // Encode command.
-cr::pantilt::PanTilt::encodeSetParamCommand(
-    data, size, cr::pantilt::PanTiltParam::PAN_ANGLE, outValue);
+rapidpixel::PanTilt::encodeSetParamCommand(
+    data, size, rapidpixel::PanTiltParam::PAN_ANGLE, outValue);
 ```
 
 
@@ -391,8 +388,8 @@ uint8_t data[15];
 // Size of encoded data.
 int size = 0;
 // Encode command.
-cr::pantilt::PanTilt::encodeCommand(
-    data, size, cr::pantilt::PanTiltCommand::GO_TO_PAN_ANGLE, 10.0f, 10.0f);
+rapidpixel::PanTilt::encodeCommand(
+    data, size, rapidpixel::PanTiltCommand::GO_TO_PAN_ANGLE, 10.0f, 10.0f);
 ```
 
 
@@ -446,9 +443,7 @@ virtual bool decodeAndExecuteCommand(uint8_t* data, int size) = 0;
 Enum declaration:
 
 ```cpp
-namespace cr
-{
-namespace pantilt
+namespace rapidpixel
 {
 enum class PanTiltCommand
 {
@@ -483,7 +478,6 @@ enum class PanTiltCommand
     MOVE_PAN_TILT
 };
 }
-}
 ```
 
 The command IDs are consecutive numbers from 1 (RESTART) to 12 (MOVE_PAN_TILT). **MOVE_PAN_TILT** has to stay the last value: [decodeCommand(...)](#decodecommand-method) uses the range to check IDs.
@@ -512,9 +506,7 @@ The command IDs are consecutive numbers from 1 (RESTART) to 12 (MOVE_PAN_TILT). 
 Enum declaration:
 
 ```cpp
-namespace cr
-{
-namespace pantilt
+namespace rapidpixel
 {
 enum class PanTiltParam
 {
@@ -543,7 +535,6 @@ enum class PanTiltParam
     /// Custom param. Value depends on implementation.
     CUSTOM_3
 };
-}
 }
 ```
 
@@ -576,9 +567,7 @@ The param IDs are consecutive numbers from 1 (PAN_MOTOR_POSITION) to 11 (CUSTOM_
 **PanTiltParams** class contains all pan-tilt parameters. Also **PanTiltParams** provides possibility to write / read params from JSON files (**JSON_READABLE** macro) and provides methods to encode and decode params. **PanTiltParams** interface class declared in **PanTilt.h** file. Class declaration:
 
 ```cpp
-namespace cr
-{
-namespace pantilt
+namespace rapidpixel
 {
 class PanTiltParams
 {
@@ -636,7 +625,6 @@ public:
     /// Decode (deserialize) params.
     bool decode(uint8_t* data, int dataSize);
 };
-}
 }
 ```
 
@@ -705,7 +693,7 @@ Example without parameters mask:
 
 ```cpp
 // Prepare parameters.
-cr::pantilt::PanTiltParams params;
+rapidpixel::PanTiltParams params;
 params.panAngle = 160.0f;
 
 // Encode (serialize) params.
@@ -722,11 +710,11 @@ Example with parameters mask:
 
 ```cpp
 // Prepare parameters.
-cr::pantilt::PanTiltParams params;
+rapidpixel::PanTiltParams params;
 params.panAngle = 160.0f;
 
 // Prepare mask.
-cr::pantilt::PanTiltParamsMask mask;
+rapidpixel::PanTiltParamsMask mask;
 // Exclude tiltAngle.
 mask.tiltAngle = false;
 
@@ -763,7 +751,7 @@ Example:
 
 ```cpp
 // Prepare parameters.
-cr::pantilt::PanTiltParams params1;
+rapidpixel::PanTiltParams params1;
 params1.panAngle = 160.0f;
 
 // Encode (serialize) params.
@@ -776,7 +764,7 @@ if (!params1.encode(buffer, bufferSize, size))
 }
 
 // Decode (deserialize) params.
-cr::pantilt::PanTiltParams params2;
+rapidpixel::PanTiltParams params2;
 if (!params2.decode(buffer, size))
 {
     std::cout << "Can't decode params" << std::endl;
@@ -791,7 +779,7 @@ if (!params2.decode(buffer, size))
 
 ```cpp
 // Prepare parameters.
-cr::pantilt::PanTiltParams params1;
+rapidpixel::PanTiltParams params1;
 params1.panMotorSpeed = 117.0f;
 params1.tiltMotorSpeed = 27.0f;
 params1.initString = "Init string";
@@ -800,7 +788,7 @@ params1.custom2 = 74.0f;
 params1.custom3 = 237.0f;
 
 // Write params to JSON file.
-cr::utils::ConfigReader inConfig;
+rapidpixel::ConfigReader inConfig;
 inConfig.set(params1, "panTiltParams");
 if (!inConfig.writeToFile("PanTiltParams.json"))
 {
@@ -808,8 +796,8 @@ if (!inConfig.writeToFile("PanTiltParams.json"))
 }
 
 // Read params from JSON file.
-cr::utils::ConfigReader outConfig;
-cr::pantilt::PanTiltParams params2;
+rapidpixel::ConfigReader outConfig;
+rapidpixel::PanTiltParams params2;
 if (!outConfig.readFromFile("PanTiltParams.json"))
 {
     std::cout << "Can't open config file" << std::endl;
@@ -998,7 +986,7 @@ The encoded params and commands store int and float values as raw 4 bytes values
 The **PanTilt** class provides only an interface, data structures, and methods for encoding and decoding commands and params. To create your own implementation of the pan-tilt controller, PanTilt repository has to be included in your project (see [Build and connect to your project](#build-and-connect-to-your-project) section). The catalogue **example** (see [Library files](#library-files) section) includes an example of the design of the custom pan-tilt controller. All the methods of the PanTilt interface class have to be included. Custom PanTilt class declaration:
 
 ```c++
-namespace cr::pantilt
+namespace rapidpixel
 {
 /// Custom pan-tilt device controller class.
 class CustomPanTilt : public PanTilt

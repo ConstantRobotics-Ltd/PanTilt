@@ -5,9 +5,7 @@
 
 
 
-namespace cr
-{
-namespace pantilt
+namespace rapidpixel
 {
 /**
  * @brief Mask for PanTilt params for encoding (serializing).
@@ -437,5 +435,16 @@ protected:
      */
     PanTilt& operator= (PanTilt&& src) = default;
 };
+}
+
+
+
+// Compatibility: the names of namespace rapidpixel are also available in
+// namespace cr::pantilt.
+namespace cr
+{
+namespace pantilt
+{
+using namespace ::rapidpixel;
 }
 }

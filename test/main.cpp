@@ -14,7 +14,7 @@
 
 namespace
 {
-namespace pt = cr::pantilt;
+namespace pt = rapidpixel;
 
 /// Number of PanTiltParams fields which are encoded.
 constexpr int FIELDS_NUMBER{11};
@@ -1105,14 +1105,14 @@ bool jsonStringTest()
     for (int i = 0; i < 200; ++i)
     {
         const pt::PanTiltParams source = jsonParams();
-        cr::utils::ConfigReader writer;
+        rapidpixel::ConfigReader writer;
         writer.set(source, "panTiltParams");
         std::string json;
         if (!writer.writeToString(json))
         {
             return fail("Can't write params to string");
         }
-        cr::utils::ConfigReader reader;
+        rapidpixel::ConfigReader reader;
         pt::PanTiltParams target;
         if (!reader.readFromString(json) ||
             !reader.get(target, "panTiltParams"))
@@ -1156,7 +1156,7 @@ bool jsonStringTest()
         "{\"panTiltParams\": {\"custom1\": 1e999}}"};
     for (const char* document : documents)
     {
-        cr::utils::ConfigReader reader;
+        rapidpixel::ConfigReader reader;
         pt::PanTiltParams target = sentinelParams();
         const bool accepted = reader.readFromString(document) &&
                               reader.get(target, "panTiltParams");
@@ -1171,7 +1171,7 @@ bool jsonStringTest()
     // Deep nesting is rejected without a crash.
     {
         const std::string deep(100000, '[');
-        cr::utils::ConfigReader reader;
+        rapidpixel::ConfigReader reader;
         if (reader.readFromString(deep))
         {
             return fail("Deeply nested document is accepted");
@@ -1189,14 +1189,14 @@ bool jsonFileTest()
     FileRemover remover(JSON_FILE_NAME);
     int errors{0};
 
-    cr::utils::ConfigReader writer;
+    rapidpixel::ConfigReader writer;
     writer.set(source, "panTiltParams");
     if (!writer.writeToFile(JSON_FILE_NAME))
     {
         return fail("Can't write params to file");
     }
 
-    cr::utils::ConfigReader reader;
+    rapidpixel::ConfigReader reader;
     if (!reader.readFromFile(JSON_FILE_NAME))
     {
         return fail("Can't open config file");
@@ -1220,7 +1220,7 @@ bool jsonFileTest()
     }
 
     // A file which does not exist.
-    cr::utils::ConfigReader missing;
+    rapidpixel::ConfigReader missing;
     if (missing.readFromFile("PanTiltTestMissingFile.json"))
     {
         return fail("A missing file is read");

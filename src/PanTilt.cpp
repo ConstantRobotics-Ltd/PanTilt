@@ -69,16 +69,16 @@ constexpr int COMMAND_SIZE{15};
 
 /// First valid param ID.
 constexpr int PARAM_ID_FIRST{
-    static_cast<int>(cr::pantilt::PanTiltParam::PAN_MOTOR_POSITION)};
+    static_cast<int>(rapidpixel::PanTiltParam::PAN_MOTOR_POSITION)};
 /// Last valid param ID.
 constexpr int PARAM_ID_LAST{
-    static_cast<int>(cr::pantilt::PanTiltParam::CUSTOM_3)};
+    static_cast<int>(rapidpixel::PanTiltParam::CUSTOM_3)};
 /// First valid command ID.
 constexpr int COMMAND_ID_FIRST{
-    static_cast<int>(cr::pantilt::PanTiltCommand::RESTART)};
+    static_cast<int>(rapidpixel::PanTiltCommand::RESTART)};
 /// Last valid command ID.
 constexpr int COMMAND_ID_LAST{
-    static_cast<int>(cr::pantilt::PanTiltCommand::MOVE_PAN_TILT)};
+    static_cast<int>(rapidpixel::PanTiltCommand::MOVE_PAN_TILT)};
 
 
 
@@ -96,7 +96,7 @@ struct FieldRef
 /// Get the table of PanTiltParams fields in the order they are stored in the
 /// encoded data (the same order as the bits of the mask).
 std::array<FieldRef, FIELDS_NUMBER> makeFieldTable(
-        cr::pantilt::PanTiltParams& p)
+        rapidpixel::PanTiltParams& p)
 {
     return {{
         {&p.panMotorPosition, VALUE_SIZE},
@@ -117,7 +117,7 @@ std::array<FieldRef, FIELDS_NUMBER> makeFieldTable(
 
 /// Get the flags of the mask in the order of the table of fields.
 std::array<bool, FIELDS_NUMBER> makeMaskTable(
-        const cr::pantilt::PanTiltParamsMask& m)
+        const rapidpixel::PanTiltParamsMask& m)
 {
     return {{
         m.panMotorPosition,
@@ -161,8 +161,8 @@ bool isEncoded(const uint8_t* data, int field)
 
 
 
-cr::pantilt::PanTiltParams &cr::pantilt::PanTiltParams::operator= (
-        const cr::pantilt::PanTiltParams& src)
+rapidpixel::PanTiltParams &rapidpixel::PanTiltParams::operator= (
+        const rapidpixel::PanTiltParams& src)
 {
     // Check yourself.
     if (this == &src)
@@ -187,8 +187,8 @@ cr::pantilt::PanTiltParams &cr::pantilt::PanTiltParams::operator= (
 
 
 
-bool cr::pantilt::PanTiltParams::encode(uint8_t* data, int bufferSize,
-                                        int& size, PanTiltParamsMask* mask)
+bool rapidpixel::PanTiltParams::encode(uint8_t* data, int bufferSize,
+                                       int& size, PanTiltParamsMask* mask)
 {
     // Check pointer and buffer size. The buffer must be able to hold all
     // params independently of the mask.
@@ -252,7 +252,7 @@ bool cr::pantilt::PanTiltParams::encode(uint8_t* data, int bufferSize,
 
 
 
-bool cr::pantilt::PanTiltParams::decode(uint8_t* data, int dataSize)
+bool rapidpixel::PanTiltParams::decode(uint8_t* data, int dataSize)
 {
     // Check pointer and data size (header must be complete).
     if (data == nullptr || dataSize < PARAMS_HEADER_SIZE)
@@ -313,18 +313,18 @@ bool cr::pantilt::PanTiltParams::decode(uint8_t* data, int dataSize)
 
 
 
-cr::pantilt::PanTilt::~PanTilt() = default;
+rapidpixel::PanTilt::~PanTilt() = default;
 
 
 
-std::string cr::pantilt::PanTilt::getVersion()
+std::string rapidpixel::PanTilt::getVersion()
 {
     return PAN_TILT_VERSION;
 }
 
 
 
-void cr::pantilt::PanTilt::encodeSetParamCommand(
+void rapidpixel::PanTilt::encodeSetParamCommand(
         uint8_t* data, int& size, PanTiltParam id, float value)
 {
     // Nothing can be encoded without a buffer.
@@ -350,7 +350,7 @@ void cr::pantilt::PanTilt::encodeSetParamCommand(
 
 
 
-void cr::pantilt::PanTilt::encodeCommand(
+void rapidpixel::PanTilt::encodeCommand(
         uint8_t* data, int& size, PanTiltCommand id, float arg1, float arg2)
 {
     // Nothing can be encoded without a buffer.
@@ -378,7 +378,7 @@ void cr::pantilt::PanTilt::encodeCommand(
 
 
 
-int cr::pantilt::PanTilt::decodeCommand(
+int rapidpixel::PanTilt::decodeCommand(
         uint8_t* data, int size, PanTiltParam& paramId,
         PanTiltCommand& commandId, float& value1, float& value2)
 {

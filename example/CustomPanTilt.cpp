@@ -88,22 +88,22 @@ bool assignIntParam(int& target, float value, int minValue, int maxValue)
 
 
 
-cr::pantilt::CustomPanTilt::CustomPanTilt() = default;
+rapidpixel::CustomPanTilt::CustomPanTilt() = default;
 
 
 
-cr::pantilt::CustomPanTilt::~CustomPanTilt() = default;
+rapidpixel::CustomPanTilt::~CustomPanTilt() = default;
 
 
 
-std::string cr::pantilt::CustomPanTilt::getVersion()
+std::string rapidpixel::CustomPanTilt::getVersion()
 {
     return CUSTOM_PAN_TILT_VERSION;
 }
 
 
 
-bool cr::pantilt::CustomPanTilt::openPanTilt(std::string)
+bool rapidpixel::CustomPanTilt::openPanTilt(std::string)
 {
     // Set connection flags.
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
@@ -115,7 +115,7 @@ bool cr::pantilt::CustomPanTilt::openPanTilt(std::string)
 
 
 
-bool cr::pantilt::CustomPanTilt::initPanTilt(PanTiltParams& params)
+bool rapidpixel::CustomPanTilt::initPanTilt(PanTiltParams& params)
 {
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
 
@@ -131,7 +131,7 @@ bool cr::pantilt::CustomPanTilt::initPanTilt(PanTiltParams& params)
 
 
 
-void cr::pantilt::CustomPanTilt::closePanTilt()
+void rapidpixel::CustomPanTilt::closePanTilt()
 {
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
     m_params.isConnected = false;
@@ -140,7 +140,7 @@ void cr::pantilt::CustomPanTilt::closePanTilt()
 
 
 
-bool cr::pantilt::CustomPanTilt::isPanTiltOpen()
+bool rapidpixel::CustomPanTilt::isPanTiltOpen()
 {
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
     return m_params.isOpen;
@@ -148,7 +148,7 @@ bool cr::pantilt::CustomPanTilt::isPanTiltOpen()
 
 
 
-bool cr::pantilt::CustomPanTilt::isPanTiltConnected()
+bool rapidpixel::CustomPanTilt::isPanTiltConnected()
 {
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
     return m_params.isConnected;
@@ -156,7 +156,7 @@ bool cr::pantilt::CustomPanTilt::isPanTiltConnected()
 
 
 
-bool cr::pantilt::CustomPanTilt::setParam(PanTiltParam id, float value)
+bool rapidpixel::CustomPanTilt::setParam(PanTiltParam id, float value)
 {
     // Lock mutex for setting parameters.
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
@@ -215,7 +215,7 @@ bool cr::pantilt::CustomPanTilt::setParam(PanTiltParam id, float value)
 
 
 
-float cr::pantilt::CustomPanTilt::getParam(PanTiltParam id)
+float rapidpixel::CustomPanTilt::getParam(PanTiltParam id)
 {
     // Lock mutex for reading parameters.
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
@@ -275,7 +275,7 @@ float cr::pantilt::CustomPanTilt::getParam(PanTiltParam id)
 
 
 
-void cr::pantilt::CustomPanTilt::getParams(PanTiltParams& params)
+void rapidpixel::CustomPanTilt::getParams(PanTiltParams& params)
 {
     // Lock mutex for assigning parameters.
     const std::lock_guard<std::mutex> lock(m_paramsMutex);
@@ -284,7 +284,7 @@ void cr::pantilt::CustomPanTilt::getParams(PanTiltParams& params)
 
 
 
-bool cr::pantilt::CustomPanTilt::executeCommand(PanTiltCommand id, float, float)
+bool rapidpixel::CustomPanTilt::executeCommand(PanTiltCommand id, float, float)
 {
     // Check command ID. The example accepts the commands and does nothing.
     switch (id)
@@ -316,7 +316,7 @@ bool cr::pantilt::CustomPanTilt::executeCommand(PanTiltCommand id, float, float)
 
 
 
-bool cr::pantilt::CustomPanTilt::decodeAndExecuteCommand(
+bool rapidpixel::CustomPanTilt::decodeAndExecuteCommand(
         uint8_t* data, int size)
 {
     // Decode command. The decoder checks the pointer, the size, the version

@@ -6,7 +6,7 @@
 
 
 
-namespace cr::pantilt
+namespace rapidpixel
 {
 /**
  * @brief Custom pan-tilt device controller class.
