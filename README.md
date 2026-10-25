@@ -90,6 +90,7 @@ example ------------------------ Folder with source code of the custom PanTilt i
     CustomPanTilt.h ------------ Header file which includes custom PanTilt class declaration.
     CustomPanTiltVersion.h ----- Header file which includes version of the library.
     CustomPanTiltVersion.h.in -- CMake service file to generate version file.
+static ------------------------- Folder with the logo of the library.
 ```
 
 
