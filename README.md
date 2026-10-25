@@ -776,7 +776,7 @@ if (!params2.decode(buffer, size))
 
 ## Read params from JSON file and write to JSON file
 
-**PanTilt** depends on open source [ConfigReader](https://rapidpixel.constantrobotics.com/docs/Service/ConfigReader.html) library which provides method to read params from JSON file and to write params to JSON file (**JSON_READABLE** macro defines only few parameters to read / write from JSON: panMotorSpeed, tiltMotorSpeed, initString, custom1, custom2 and custom3). All of these parameters have to be present in the JSON with the correct types: if a parameter is missing or has a wrong type the **get(...)** method of ConfigReader returns FALSE and the object is not changed. Example of writing and reading params to JSON file:
+**PanTilt** depends on the [ConfigReader](https://rapidpixel.constantrobotics.com/docs/Service/ConfigReader.html) library which provides method to read params from JSON file and to write params to JSON file (**JSON_READABLE** macro defines only few parameters to read / write from JSON: panMotorSpeed, tiltMotorSpeed, initString, custom1, custom2 and custom3). All of these parameters have to be present in the JSON with the correct types: if a parameter is missing or has a wrong type the **get(...)** method of ConfigReader returns FALSE and the object is not changed. Example of writing and reading params to JSON file:
 
 ```cpp
 // Prepare parameters.
