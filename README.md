@@ -50,6 +50,8 @@
 
 **PanTilt** is a C++ library designed to serve as a standard interface for various pan-tilt devices. The library defines interface and data structures for pan-tilt software controllers. Also it provides methods to encode / decode commands and encode / decode parameters. **PanTilt.h** file contains list of data structures ([PanTiltCommand enum](#pantiltcommand-enum) (defines action commands IDs), [PanTiltParam enum](#pantiltparam-enum) (defines parameters IDs), [PanTiltParams](#pantiltparams-class-declaration) class) and [PanTilt](#pantilt-interface-class-declaration) class declaration. **PanTilt** interface depends on [ConfigReader](https://rapidpixel.constantrobotics.com/docs/Service/ConfigReader.html) library (provides methods to read / write JSON config files). It uses C++17 standard.
 
+**PanTilt** is general-purpose software: it is not tied to any sector or application, and the developer of a program decides what the program does with it.
+
 
 
 # Versions
