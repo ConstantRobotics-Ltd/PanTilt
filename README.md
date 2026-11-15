@@ -834,7 +834,7 @@ else if (!outConfig.get(params2, "panTiltParams"))
 
 ## Build stand alone
 
-The repository does not contain sub-repositories. The **ConfigReader** library which **PanTilt** depends on must be cloned into the same folder as **PanTilt**. The folder structure must be:
+The repository does not contain sub-repositories. The library **PanTilt** depends on (**ConfigReader**) must be placed in the same folder as **PanTilt**: copy its folder, for example from the folder **modules** of the RapidPixel SDK. The folder structure must be:
 
 ```bash
 <work folder>
@@ -842,11 +842,9 @@ The repository does not contain sub-repositories. The **ConfigReader** library w
     ConfigReader
 ```
 
-Typical commands to build the library, the test application and the example (use the URLs of the repositories provided to you):
+Typical commands to build the library, the test application and the example:
 
 ```bash
-git clone <PanTilt repository URL>
-git clone <ConfigReader repository URL>
 cd PanTilt
 mkdir build
 cd build
@@ -884,7 +882,7 @@ src
     yourLib.cpp
 ```
 
-Create **3rdparty** folder in your repository and copy **PanTilt** and **ConfigReader** repository folders there. Structure of your repository:
+Create folder **3rdparty** in your repository and copy the folders of the libraries **ConfigReader** and **PanTilt** there (for example from the folder **modules** of the RapidPixel SDK). Structure of your repository:
 
 ```bash
 CMakeLists.txt
