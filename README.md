@@ -4,7 +4,7 @@
 
 # **PanTilt C++ library**
 
-**v1.1.3**
+**v1.1.4**
 
 
 
@@ -68,6 +68,7 @@
 | 1.1.1   | 03.09.2024   | - Documentation updated.<br /> |
 | 1.1.2   | 12.10.2026   | - Submodules updated.                         |
 | 1.1.3   | 18.10.2026   | - Git submodules removed: the ConfigReader repository has to be located next to the PanTilt repository.<br />- CMake: compiler warning options, security hardening options, standard C++ without compiler extensions.<br />- **PanTiltParams::encode(...)**, **PanTiltParams::decode(...)**, **PanTilt::encodeSetParamCommand(...)**, **PanTilt::encodeCommand(...)** and **PanTilt::decodeCommand(...)** reject a null data pointer.<br />- **PanTiltParams::encode(...)** sets size to 0 if it returns FALSE.<br />- **PanTiltParams::decode(...)** does not change the object if it returns FALSE.<br />- **PanTilt::decodeCommand(...)** accepts only the exact command size (11 or 15 bytes), rejects IDs outside of the enum range and does not change output arguments if it returns -1.<br />- **PanTilt** interface class has protected special member functions.<br />- Example: all methods are thread-safe, NaN is rejected by **setParam(...)**.<br />- Test application and documentation updated. |
+| 1.1.4   | 21.11.2026   | - CMake: hardening flags are checked with -Werror, the build with Clang 15 for AArch64 has no warnings. |
 
 
 
@@ -200,7 +201,7 @@ std::cout << "PanTilt version: " << rapidpixel::PanTilt::getVersion() << std::en
 Console output:
 
 ```bash
-PanTilt version: 1.1.3
+PanTilt version: 1.1.4
 ```
 
 
